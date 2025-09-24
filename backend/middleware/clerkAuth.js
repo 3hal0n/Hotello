@@ -1,5 +1,4 @@
-// backend/middleware/clerkAuth.js
-const { Clerk } = require('@clerk/clerk-sdk-node'); // or use the SDK's recommended import
+const { Clerk } = require('@clerk/clerk-sdk-node'); 
 const clerk = new Clerk({ apiKey: process.env.CLERK_API_KEY });
 
 module.exports = async function clerkAuth(req, res, next) {
@@ -10,14 +9,13 @@ module.exports = async function clerkAuth(req, res, next) {
   const token = header.replace('Bearer ', '');
 
   try {
-    // Replace this with the SDK's method for verifying session tokens.
-    // Many SDKs expose a method to verify session tokens and return user/session info.
-    const session = await clerk.verifyToken(token); // pseudocode — adapt to SDK
-    // e.g. session = { userId: 'abc', sessionId: '...' }
-    req.auth = { userId: session.userId, sessionId: session.sessionId };
+    // TODO: replace the following with the exact verify API from @clerk/clerk-sdk-node
+    // e.g. const session = await clerk.verifySessionToken(token) or the recommended method
+    const session = await clerk.verifyToken(token); // placeholder — adapt to SDK
+    req.auth = { userId: session.userId, sessionId: session.id };
     next();
   } catch (err) {
-    console.error('Auth error', err);
-    res.status(401).json({ error: 'Invalid or expired token' });
+    console.error('Auth verify failed', err);
+    res.status(401).json({ error: 'Invalid/expired token' });
   }
 };
