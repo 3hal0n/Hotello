@@ -1,13 +1,15 @@
 import React from 'react'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 
-const App = () => {
+export default function App() {
   return (
-    <div>
-      <h1 class="text-3xl font-bold underline">
-    Hello world!
-      </h1>
-    </div>
-  )
+    <header>
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
+    </header>
+  );
 }
-
-export default App
