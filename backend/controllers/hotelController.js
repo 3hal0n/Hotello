@@ -103,3 +103,31 @@ export const postHotel=async(req,res)=>{
         });
     }
 }
+
+//update hotel
+export const updateHotel=async(req,res)=>{
+    try{
+        const hotelId=req.params.id;
+        const updates=req.body;
+        const {userId}=getAuth(req);
+
+        const updatedHotel=await Hotels.findByIdAndUpdate(
+            hotelId,
+            updates,
+            {new:true} //to return the updated document
+        );
+        if(!updatedHotel){
+            return res.status(404).json({
+                success:false,
+                message:"Hotel not found",
+            });
+        }
+    }
+    catch(error){
+        console.error("Error in updateHotel:", error);
+        res.status(500).json({
+            success:false,
+            message:"Server Error"
+        });
+    }
+};
