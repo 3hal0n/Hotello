@@ -131,3 +131,26 @@ export const updateHotel=async(req,res)=>{
         });
     }
 };
+
+//Delete Hotel
+export const deleteHotel=async(req,res)=>{
+    try{
+        const hotelId=req.params.id;
+        const {userId}=getAuth(req);
+        const deleteHotel=await Hotels.findByIdAndDelete(hotelId);
+
+        if(!deleteHotel){
+            return res.status(404).json({
+                success:false,
+                message:"Hotel not found",
+            });
+        }
+    }
+    catch(error){
+        console.error("Error in deleteHotel:", error);
+        res.status(500).json({
+            success:false,
+            message:"Server Error"
+        });
+    }
+}
