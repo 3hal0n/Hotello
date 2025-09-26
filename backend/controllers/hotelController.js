@@ -20,4 +20,28 @@ export const getHotels=async(req,res)=>{
             success:false,
             message:"Server Error"});
     }
-}
+};
+
+//get single hotel
+export const getHotelById=async(req,res)=>{
+    try{
+        const hotelId=req.params.id;
+        console.log("Get Hotel By ID Called:", hotelId);
+
+        const hotel=await Hotels.findById(hotelId);
+        if(!hotel){
+            return res.status(404).json({
+                success:false,
+                message:"Hotel not found",
+
+            })
+        }
+    }
+    catch(error){
+        console.error("Error in getHotelById:", error);
+        res.status(500).json({
+            success:false,
+            message:"Server Error"
+        })
+    }
+};
