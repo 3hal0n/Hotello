@@ -7,7 +7,7 @@ export const getHotels=async(req,res)=>{
     try{
         console.log("Get Hotels Called");
 
-        const hotels=await Hotels.find({});
+        const hotels=await Hotels.find({}).lean();
         res.status(200).json({
             success:true,
             count:hotels.length,
@@ -28,14 +28,19 @@ export const getHotelById=async(req,res)=>{
         const hotelId=req.params.id;
         console.log("Get Hotel By ID Called:", hotelId);
 
-        const hotel=await Hotels.findById(hotelId);
+        const hotel=await Hotels.findById(hotelId).lean();
         if(!hotel){
             return res.status(404).json({
                 success:false,
                 message:"Hotel not found",
-
-            })
+            });
         }
+
+        // return found hotel
+        return res.status(200).json({
+            success: true,
+            data: hotel,
+        });
     }
     catch(error){
         console.error("Error in getHotelById:", error);
@@ -115,13 +120,18 @@ export const updateHotel=async(req,res)=>{
             hotelId,
             updates,
             {new:true} //to return the updated document
-        );
+        ).lean();
         if(!updatedHotel){
             return res.status(404).json({
                 success:false,
                 message:"Hotel not found",
             });
         }
+
+        return res.status(200).json({
+            success: true,
+            data: updatedHotel,
+        });
     }
     catch(error){
         console.error("Error in updateHotel:", error);
@@ -137,7 +147,7 @@ export const deleteHotel=async(req,res)=>{
     try{
         const hotelId=req.params.id;
         const {userId}=getAuth(req);
-        const deleteHotel=await Hotels.findByIdAndDelete(hotelId);
+        const deleteHotel=await Hotels.findByIdAndDelete(hotelId).lean();
 
         if(!deleteHotel){
             return res.status(404).json({
@@ -145,6 +155,11 @@ export const deleteHotel=async(req,res)=>{
                 message:"Hotel not found",
             });
         }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Hotel deleted',
+        });
     }
     catch(error){
         console.error("Error in deleteHotel:", error);
