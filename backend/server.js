@@ -11,11 +11,22 @@ app.use(express.json());
 
 const protectedRoutes = require('./routes/protected');
 app.use('/api', protectedRoutes);
+const hotelsRoutes = require('./routes/hotels');
+app.use('/api/hotels', hotelsRoutes);
 
-// Connect to MongoDB
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+// Only connect to MongoDB and start the server when run directly
+if (require.main === module) {
+  mongoose.connect(MONGO_URI)
+    .then(() => {
+      console.log('Connected to MongoDB');
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('MongoDB connection error:', err);
+      process.exit(1);
+    });
+}
 
-// Define routes and middleware
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = app;
