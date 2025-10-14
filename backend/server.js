@@ -13,6 +13,8 @@ const protectedRoutes = require('./routes/protected');
 app.use('/api', protectedRoutes);
 const hotelsRoutes = require('./routes/hotels');
 app.use('/api/hotels', hotelsRoutes);
+const bookingsRoutes = require('./routes/bookings');
+app.use('/api/bookings', bookingsRoutes);
 
 // Only connect to MongoDB and start the server when run directly
 if (require.main === module) {
