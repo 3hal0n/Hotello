@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import DomeGallery from '../components/DomeGallery';
-import TextPressure from '../components/TextPressure';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
+import Hero from '../components/Hero';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -30,29 +29,31 @@ export default function Home() {
       });
   }, []);
 
-  // Create gallery images from hotels
-  const galleryImages = hotels.map(hotel => ({
-    src: hotel.images?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-    alt: hotel.name
-  }));
-
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-900">
-        <div className="flex items-center justify-center h-screen">
-          <p className="text-white text-xl">Loading your perfect stay...</p>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-gray-900">
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-white text-xl">Loading your perfect stay...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gray-900">
-        <div className="flex items-center justify-center h-screen">
-          <p className="text-red-400 text-xl">{error}</p>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-gray-900">
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-red-400 text-xl">{error}</p>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
@@ -60,42 +61,8 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <Navbar />
       
-      {/* Hero Section - Dome Gallery */}
-      <section className="relative w-full h-screen bg-white overflow-hidden">
-        {/* Dome Gallery Layer - Auto-rotating */}
-        <div className="absolute inset-0 z-10">
-          <DomeGallery 
-            images={galleryImages}
-            grayscale={false}
-            overlayBlurColor="#ffffff"
-            fit={1}
-            minRadius={800}
-            segments={40}
-            autoRotate={true}
-            autoRotateSpeed={0.5}
-          />
-        </div>
-        
-        {/* Hero Text Overlay with TextPressure */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20 px-4">
-          <div className="w-full max-w-5xl h-32 mb-6">
-            <TextPressure
-              text="Hotello"
-              textColor="#1f2937"
-              minFontSize={32}
-              width={true}
-              weight={true}
-              italic={false}
-              alpha={false}
-              flex={false}
-              stroke={false}
-            />
-          </div>
-          <p className="text-xl md:text-2xl text-gray-700 drop-shadow-lg font-light">
-            Find Your Perfect Stay
-          </p>
-        </div>
-      </section>
+      {/* New Hero Section with Carousel */}
+      <Hero />
 
       {/* Hotels Grid Section */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-20 px-4 sm:px-6 lg:px-8">
