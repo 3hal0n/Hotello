@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import DomeGallery from '../components/DomeGallery';
+import Particles from '../components/Particles';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -54,17 +55,38 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Hero Section - Dome Gallery */}
-      <section className="relative w-full h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-        <DomeGallery 
-          images={galleryImages}
-          grayscale={false}
-          overlayBlurColor="#111827"
-        />
+    <div className="min-h-screen bg-black">
+      {/* Hero Section - Dome Gallery with Particles Background */}
+      <section className="relative w-full h-screen bg-black overflow-hidden">
+        {/* Particles Background Layer */}
+        <div className="absolute inset-0 z-0">
+          <Particles
+            particleColors={['#3b82f6', '#60a5fa', '#93c5fd']}
+            particleCount={300}
+            particleSpread={15}
+            speed={0.15}
+            particleBaseSize={80}
+            moveParticlesOnHover={true}
+            particleHoverFactor={1.5}
+            alphaParticles={true}
+            disableRotation={false}
+          />
+        </div>
+        
+        {/* Dome Gallery Layer - Zoomed In */}
+        <div className="absolute inset-0 z-10">
+          <DomeGallery 
+            images={galleryImages}
+            grayscale={false}
+            overlayBlurColor="#000000"
+            fit={0.75}
+            minRadius={800}
+            segments={40}
+          />
+        </div>
         
         {/* Hero Text Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
           <div className="text-center px-4">
             <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 drop-shadow-2xl">
               Discover Sri Lanka
