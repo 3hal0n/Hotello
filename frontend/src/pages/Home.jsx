@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import DomeGallery from '../components/DomeGallery';
-import Particles from '../components/Particles';
 import TextPressure from '../components/TextPressure';
 import ImageTrail from '../components/ImageTrail';
 
@@ -57,31 +56,16 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Hero Section - Dome Gallery with Particles Background */}
-      <section className="relative w-full h-screen bg-black overflow-hidden">
-        {/* Particles Background Layer */}
-        <div className="absolute inset-0 z-0">
-          <Particles
-            particleColors={['#3b82f6', '#60a5fa', '#93c5fd']}
-            particleCount={300}
-            particleSpread={15}
-            speed={0.15}
-            particleBaseSize={80}
-            moveParticlesOnHover={true}
-            particleHoverFactor={1.5}
-            alphaParticles={true}
-            disableRotation={false}
-          />
-        </div>
-        
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Dome Gallery */}
+      <section className="relative w-full h-screen bg-white overflow-hidden">
         {/* Dome Gallery Layer - Zoomed In */}
         <div className="absolute inset-0 z-10">
           <DomeGallery 
             images={galleryImages}
             grayscale={false}
-            overlayBlurColor="#000000"
-            fit={0.75}
+            overlayBlurColor="#ffffff"
+            fit={1}
             minRadius={800}
             segments={40}
           />
@@ -91,8 +75,8 @@ export default function Home() {
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20 px-4">
           <div className="w-full max-w-5xl h-32 mb-6">
             <TextPressure
-              text="Discover Sri Lanka"
-              textColor="#ffffff"
+              text="Hotello"
+              textColor="#1f2937"
               minFontSize={32}
               width={true}
               weight={true}
@@ -102,24 +86,15 @@ export default function Home() {
               stroke={false}
             />
           </div>
-          <p className="text-xl md:text-2xl text-gray-200 drop-shadow-lg font-light">
+          <p className="text-xl md:text-2xl text-gray-700 drop-shadow-lg font-light">
             Find Your Perfect Stay
           </p>
         </div>
       </section>
 
       {/* Hotels Grid Section with Image Trail Effect */}
-      <section className="bg-gray-50 py-16 px-8 relative">
-        {/* Image Trail - shows all hotel images on hover */}
-        <div className="absolute inset-0 pointer-events-none">
-          <ImageTrail
-            items={hotels.flatMap(hotel => 
-              hotel.images?.map(img => img.url) || []
-            )}
-          />
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
+      <section className="bg-gray-50 py-16 px-8">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Our Hotels</h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
             Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
@@ -128,7 +103,16 @@ export default function Home() {
           {hotels.length === 0 ? (
             <p className="text-center text-gray-600">No hotels available at the moment.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{hotels.map((hotel) => (
+            <div className="relative">
+              {/* Image Trail - wraps the grid container */}
+              <ImageTrail
+                items={hotels.flatMap(hotel => 
+                  hotel.images?.map(img => img.url) || []
+                )}
+              />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+                {hotels.map((hotel) => (
               <div key={hotel._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
                 {hotel.images && hotel.images[0] ? (
                   <img 
@@ -177,7 +161,8 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
