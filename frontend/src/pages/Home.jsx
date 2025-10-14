@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import DomeGallery from '../components/DomeGallery';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -9,11 +10,13 @@ export default function Home() {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`)
       .then((r) => r.json())
-      .then((data) => {
-        if (data.success) {
-          setHotels(data.data || []);
+      .then((response) => {
+        console.log('API Response:', response);
+        // Backend returns { success: true, count: X, data: [...] }
+        if (response.success && response.data) {
+          setHotels(response.data);
         } else {
-          setError('Failed to load hotels');
+          setHotels([]);
         }
         setLoading(false);
       })
@@ -24,11 +27,17 @@ export default function Home() {
       });
   }, []);
 
+  // Create gallery images from hotels
+  const galleryImages = hotels.map(hotel => ({
+    src: hotel.images?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+    alt: hotel.name
+  }));
+
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-center text-gray-600">Loading hotels...</p>
+      <main className="min-h-screen bg-gray-900">
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-white text-xl">Loading your perfect stay...</p>
         </div>
       </main>
     );
@@ -36,24 +45,49 @@ export default function Home() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-center text-red-600">{error}</p>
+      <main className="min-h-screen bg-gray-900">
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-red-400 text-xl">{error}</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Find Your Perfect Stay</h1>
+    <div className="min-h-screen bg-gray-900">
+      {/* Hero Section - Dome Gallery */}
+      <section className="relative w-full h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+        <DomeGallery 
+          images={galleryImages}
+          grayscale={false}
+          overlayBlurColor="#111827"
+        />
         
-        {hotels.length === 0 ? (
-          <p className="text-center text-gray-600">No hotels available at the moment.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {hotels.map((hotel) => (
+        {/* Hero Text Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+          <div className="text-center px-4">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 drop-shadow-2xl">
+              Discover Sri Lanka
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-200 drop-shadow-lg">
+              Find Your Perfect Stay
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Hotels Grid Section */}
+      <section className="bg-gray-50 py-16 px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Our Hotels</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
+          </p>
+          
+          {hotels.length === 0 ? (
+            <p className="text-center text-gray-600">No hotels available at the moment.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{hotels.map((hotel) => (
               <div key={hotel._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
                 {hotel.images && hotel.images[0] ? (
                   <img 
@@ -103,9 +137,10 @@ export default function Home() {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-      </div>
-    </main>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
