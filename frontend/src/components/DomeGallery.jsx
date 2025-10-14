@@ -87,7 +87,9 @@ export default function DomeGallery({
   openedImageHeight = '350px',
   imageBorderRadius = '30px',
   openedImageBorderRadius = '30px',
-  grayscale = true
+  grayscale = true,
+  autoRotate = false,
+  autoRotateSpeed = 0.5
 }) {
   const rootRef = useRef(null);
   const mainRef = useRef(null);
@@ -97,6 +99,8 @@ export default function DomeGallery({
   const scrimRef = useRef(null);
   const focusedElRef = useRef(null);
   const originalTilePositionRef = useRef(null);
+  const autoRotateRef = useRef(null);
+  const isAutoRotatingRef = useRef(autoRotate);
 
   const rotationRef = useRef({ x: 0, y: 0 });
   const startRotRef = useRef({ x: 0, y: 0 });
@@ -259,6 +263,58 @@ export default function DomeGallery({
     },
     [dragDampening, maxVerticalRotationDeg, stopInertia]
   );
+
+  // Auto-rotation effect
+  useEffect(() => {
+    if (!autoRotate) return;
+
+    const startAutoRotate = () => {
+      const animate = () => {
+        if (!isAutoRotatingRef.current) return;
+        
+        // Only rotate if not dragging and not in inertia
+        if (!draggingRef.current && !inertiaRAF.current && !focusedElRef.current) {
+          const nextY = wrapAngleSigned(rotationRef.current.y + autoRotateSpeed);
+          rotationRef.current = { ...rotationRef.current, y: nextY };
+          applyTransform(rotationRef.current.x, nextY);
+        }
+        
+        autoRotateRef.current = requestAnimationFrame(animate);
+      };
+      
+      isAutoRotatingRef.current = true;
+      autoRotateRef.current = requestAnimationFrame(animate);
+    };
+
+    startAutoRotate();
+
+    return () => {
+      isAutoRotatingRef.current = false;
+      if (autoRotateRef.current) {
+        cancelAnimationFrame(autoRotateRef.current);
+        autoRotateRef.current = null;
+      }
+    };
+  }, [autoRotate, autoRotateSpeed]);
+
+  // Pause auto-rotation when user interacts
+  useEffect(() => {
+    const pauseAutoRotate = () => {
+      if (autoRotate && draggingRef.current) {
+        isAutoRotatingRef.current = false;
+      }
+    };
+
+    const resumeAutoRotate = () => {
+      if (autoRotate && !draggingRef.current && !inertiaRAF.current) {
+        setTimeout(() => {
+          isAutoRotatingRef.current = true;
+        }, 2000); // Resume after 2 seconds of no interaction
+      }
+    };
+
+    return () => {};
+  }, [autoRotate]);
 
   useGesture(
     {

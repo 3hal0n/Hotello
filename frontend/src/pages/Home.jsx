@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import DomeGallery from '../components/DomeGallery';
 import TextPressure from '../components/TextPressure';
-import ImageTrail from '../components/ImageTrail';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import HotelCard from '../components/HotelCard';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -57,9 +58,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navbar />
+      
       {/* Hero Section - Dome Gallery */}
       <section className="relative w-full h-screen bg-white overflow-hidden">
-        {/* Dome Gallery Layer - Zoomed In */}
+        {/* Dome Gallery Layer - Auto-rotating */}
         <div className="absolute inset-0 z-10">
           <DomeGallery 
             images={galleryImages}
@@ -68,6 +71,8 @@ export default function Home() {
             fit={1}
             minRadius={800}
             segments={40}
+            autoRotate={true}
+            autoRotateSpeed={0.5}
           />
         </div>
         
@@ -92,81 +97,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Hotels Grid Section with Image Trail Effect */}
-      <section className="bg-gray-50 py-16 px-8">
+      {/* Hotels Grid Section */}
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Our Hotels</h2>
-          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-            Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
-          </p>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Our Premium Hotels
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
+            </p>
+          </div>
           
           {hotels.length === 0 ? (
-            <p className="text-center text-gray-600">No hotels available at the moment.</p>
+            <div className="text-center py-12">
+              <p className="text-gray-600">No hotels available at the moment.</p>
+            </div>
           ) : (
-            <div className="relative">
-              {/* Image Trail - wraps the grid container */}
-              <ImageTrail
-                items={hotels.flatMap(hotel => 
-                  hotel.images?.map(img => img.url) || []
-                )}
-              />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-                {hotels.map((hotel) => (
-              <div key={hotel._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                {hotel.images && hotel.images[0] ? (
-                  <img 
-                    src={hotel.images[0].url} 
-                    alt={hotel.name}
-                    className="w-full h-48 object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">No image</span>
-                  </div>
-                )}
-                
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-2">{hotel.name}</h2>
-                  <p className="text-gray-600 mb-2 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    {hotel.location}
-                  </p>
-                  
-                  {hotel.rating > 0 && (
-                    <div className="flex items-center mb-3">
-                      <span className="text-yellow-500">★</span>
-                      <span className="ml-1 text-gray-700">{hotel.rating.toFixed(1)}</span>
-                    </div>
-                  )}
-                  
-                  <p className="text-gray-700 mb-4 line-clamp-2">{hotel.description}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">From</p>
-                      <p className="text-2xl font-bold text-blue-600">
-                        ${hotel.pricePerNight}
-                        <span className="text-sm text-gray-500 font-normal">/night</span>
-                      </p>
-                    </div>
-                    <Link 
-                      to={`/hotels/${hotel._id}`}
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {hotels.map((hotel) => (
+                <HotelCard key={hotel._id} hotel={hotel} />
+              ))}
             </div>
           )}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }
