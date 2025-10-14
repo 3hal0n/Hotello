@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function Booking() {
   const { id } = useParams();
@@ -106,51 +108,61 @@ export default function Booking() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-center text-gray-600">Loading...</p>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-gray-50 pt-20 p-8">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-center text-gray-600">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   if (error && !hotel) {
     return (
-      <main className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-center text-red-600">{error}</p>
-          <button 
-            onClick={() => navigate('/')}
-            className="mt-4 mx-auto block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Back to Hotels
-          </button>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-gray-50 pt-20 p-8">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-center text-red-600">{error}</p>
+            <button 
+              onClick={() => navigate('/')}
+              className="mt-4 mx-auto block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            >
+              Back to Hotels
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <button 
-          onClick={() => navigate(`/hotels/${id}`)}
-          className="mb-6 text-blue-600 hover:text-blue-700 flex items-center"
-        >
-          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Hotel Details
-        </button>
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <button 
+            onClick={() => navigate(`/hotels/${id}`)}
+            className="mb-6 text-blue-600 hover:text-blue-700 flex items-center group transition-all duration-200"
+          >
+            <svg className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Hotel Details
+          </button>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Complete Your Booking</h1>
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-8">Complete Your Booking</h1>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800">{error}</p>
-            </div>
-          )}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <p className="text-red-800">{error}</p>
+              </div>
+            )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Hotel Summary */}
@@ -259,6 +271,8 @@ export default function Booking() {
           </div>
         </div>
       </div>
+      <Footer />
     </main>
+    </>
   );
 }

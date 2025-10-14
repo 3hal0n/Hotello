@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import HotelCard from '../components/HotelCard';
+import Hero from '../components/Hero';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -9,11 +12,13 @@ export default function Home() {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`)
       .then((r) => r.json())
-      .then((data) => {
-        if (data.success) {
-          setHotels(data.data || []);
+      .then((response) => {
+        console.log('API Response:', response);
+        // Backend returns { success: true, count: X, data: [...] }
+        if (response.success && response.data) {
+          setHotels(response.data);
         } else {
-          setError('Failed to load hotels');
+          setHotels([]);
         }
         setLoading(false);
       })
@@ -26,86 +31,66 @@ export default function Home() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-center text-gray-600">Loading hotels...</p>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-gray-900">
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-white text-xl">Loading your perfect stay...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-center text-red-600">{error}</p>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-gray-900">
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-red-400 text-xl">{error}</p>
+          </div>
+        </main>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Find Your Perfect Stay</h1>
-        
-        {hotels.length === 0 ? (
-          <p className="text-center text-gray-600">No hotels available at the moment.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {hotels.map((hotel) => (
-              <div key={hotel._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-                {hotel.images && hotel.images[0] ? (
-                  <img 
-                    src={hotel.images[0].url} 
-                    alt={hotel.name}
-                    className="w-full h-48 object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">No image</span>
-                  </div>
-                )}
-                
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-2">{hotel.name}</h2>
-                  <p className="text-gray-600 mb-2 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    {hotel.location}
-                  </p>
-                  
-                  {hotel.rating > 0 && (
-                    <div className="flex items-center mb-3">
-                      <span className="text-yellow-500">★</span>
-                      <span className="ml-1 text-gray-700">{hotel.rating.toFixed(1)}</span>
-                    </div>
-                  )}
-                  
-                  <p className="text-gray-700 mb-4 line-clamp-2">{hotel.description}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">From</p>
-                      <p className="text-2xl font-bold text-blue-600">
-                        ${hotel.pricePerNight}
-                        <span className="text-sm text-gray-500 font-normal">/night</span>
-                      </p>
-                    </div>
-                    <Link 
-                      to={`/hotels/${hotel._id}`}
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      
+      {/* New Hero Section with Carousel */}
+      <Hero />
+
+      {/* Hotels Grid Section */}
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Our Premium Hotels
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
+            </p>
           </div>
-        )}
-      </div>
-    </main>
+          
+          {hotels.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No hotels available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {hotels.map((hotel) => (
+                <HotelCard key={hotel._id} hotel={hotel} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
   );
 }

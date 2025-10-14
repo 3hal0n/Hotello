@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import CircularGallery from '../components/CircularGallery';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function HotelDetails() {
   const { id } = useParams();
@@ -94,46 +97,43 @@ export default function HotelDetails() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <button 
-          onClick={() => navigate('/')}
-          className="mb-4 text-blue-600 hover:text-blue-700 flex items-center"
-        >
-          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Hotels
-        </button>
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <button 
+            onClick={() => navigate('/')}
+            className="mb-6 text-blue-600 hover:text-blue-700 flex items-center group transition-all duration-200"
+          >
+            <svg className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Hotels
+          </button>
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Hotel Images */}
-          {hotel.images && hotel.images.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4">
-              <img 
-                src={hotel.images[0].url} 
-                alt={hotel.name}
-                className="w-full h-96 object-cover rounded-lg"
-              />
-              {hotel.images.length > 1 && (
-                <div className="grid grid-cols-2 gap-2">
-                  {hotel.images.slice(1, 5).map((img, idx) => (
-                    <img 
-                      key={idx}
-                      src={img.url} 
-                      alt={`${hotel.name} ${idx + 2}`}
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400">No images available</span>
-            </div>
-          )}
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Circular Gallery for Hotel Images - White Background */}
+            {hotel.images && hotel.images.length > 0 ? (
+              <div className="w-full h-[600px] bg-white relative">
+                <CircularGallery
+                  items={hotel.images.map((img, idx) => ({
+                    image: img.url,
+                    text: `${hotel.name} - View ${idx + 1}`
+                  }))}
+                  bend={3}
+                  textColor="#1f2937"
+                  borderRadius={0.05}
+                  scrollSpeed={2}
+                  scrollEase={0.05}
+                />
+              </div>
+            ) : (
+              <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-400 text-xl">No images available</span>
+              </div>
+            )}
 
+          {/* Hotel Info Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8">
             {/* Hotel Info */}
             <div className="lg:col-span-2">
@@ -230,9 +230,13 @@ export default function HotelDetails() {
                 <button
                   onClick={handleBooking}
                   disabled={!checkIn || !checkOut || nights <= 0}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="relative w-full py-3.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/50 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 >
-                  {isSignedIn ? 'Reserve' : 'Sign in to Book'}
+                  <span className="relative z-10">{isSignedIn ? 'Reserve Now' : 'Sign in to Book'}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute inset-0 bg-white/20 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                  </div>
                 </button>
 
                 {!isSignedIn && (
@@ -245,6 +249,8 @@ export default function HotelDetails() {
           </div>
         </div>
       </div>
+      <Footer />
     </main>
+    </>
   );
 }
