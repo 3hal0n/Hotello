@@ -61,6 +61,9 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <Navbar />
       
+      {/* Spacer for fixed navbar */}
+      <div className="h-10"></div>
+      
       {/* New Hero Section with Carousel */}
       <Hero />
 
