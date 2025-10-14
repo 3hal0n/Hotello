@@ -40,6 +40,8 @@ export default function Navbar() {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/hotels', label: 'Hotels' },
+    { path: '/about', label: 'About' },
+    { path: '/contact', label: 'Contact' },
   ];
 
   return (
@@ -104,10 +106,10 @@ export default function Navbar() {
               {isSignedIn ? (
                 <div className="flex items-center space-x-4">
                   <Link
-                    to="/my-bookings"
+                    to="/profile"
                     className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    My Bookings
+                    My Profile
                   </Link>
                   <UserButton afterSignOutUrl="/" />
                 </div>
