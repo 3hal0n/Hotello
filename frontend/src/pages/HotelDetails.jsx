@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import CircularGallery from '../components/CircularGallery';
 
 export default function HotelDetails() {
   const { id } = useParams();
@@ -107,33 +108,28 @@ export default function HotelDetails() {
         </button>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Hotel Images */}
+          {/* Circular Gallery for Hotel Images */}
           {hotel.images && hotel.images.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4">
-              <img 
-                src={hotel.images[0].url} 
-                alt={hotel.name}
-                className="w-full h-96 object-cover rounded-lg"
+            <div className="w-full h-[600px] bg-black relative">
+              <CircularGallery
+                items={hotel.images.map((img, idx) => ({
+                  image: img.url,
+                  text: `${hotel.name} - View ${idx + 1}`
+                }))}
+                bend={3}
+                textColor="#ffffff"
+                borderRadius={0.05}
+                scrollSpeed={2}
+                scrollEase={0.05}
               />
-              {hotel.images.length > 1 && (
-                <div className="grid grid-cols-2 gap-2">
-                  {hotel.images.slice(1, 5).map((img, idx) => (
-                    <img 
-                      key={idx}
-                      src={img.url} 
-                      alt={`${hotel.name} ${idx + 2}`}
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           ) : (
             <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400">No images available</span>
+              <span className="text-gray-400 text-xl">No images available</span>
             </div>
           )}
 
+          {/* Hotel Info Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8">
             {/* Hotel Info */}
             <div className="lg:col-span-2">

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import DomeGallery from '../components/DomeGallery';
 import Particles from '../components/Particles';
+import TextPressure from '../components/TextPressure';
+import ImageTrail from '../components/ImageTrail';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -85,22 +87,39 @@ export default function Home() {
           />
         </div>
         
-        {/* Hero Text Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-          <div className="text-center px-4">
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 drop-shadow-2xl">
-              Discover Sri Lanka
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-200 drop-shadow-lg">
-              Find Your Perfect Stay
-            </p>
+        {/* Hero Text Overlay with TextPressure */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20 px-4">
+          <div className="w-full max-w-5xl h-32 mb-6">
+            <TextPressure
+              text="Discover Sri Lanka"
+              textColor="#ffffff"
+              minFontSize={32}
+              width={true}
+              weight={true}
+              italic={false}
+              alpha={false}
+              flex={false}
+              stroke={false}
+            />
           </div>
+          <p className="text-xl md:text-2xl text-gray-200 drop-shadow-lg font-light">
+            Find Your Perfect Stay
+          </p>
         </div>
       </section>
 
-      {/* Hotels Grid Section */}
-      <section className="bg-gray-50 py-16 px-8">
-        <div className="max-w-7xl mx-auto">
+      {/* Hotels Grid Section with Image Trail Effect */}
+      <section className="bg-gray-50 py-16 px-8 relative">
+        {/* Image Trail - shows all hotel images on hover */}
+        <div className="absolute inset-0 pointer-events-none">
+          <ImageTrail
+            items={hotels.flatMap(hotel => 
+              hotel.images?.map(img => img.url) || []
+            )}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">Our Hotels</h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
             Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
