@@ -255,6 +255,34 @@ Notes & recommended setup:
 - Secrets: No GitHub Actions secrets are required for the standard builds. If you integrate any external registries (Docker Hub, container registry, etc.) you would set corresponding secrets in the GitHub repository settings — but this repo's workflows do not depend on them now.
 
 How to trigger CI locally:
+### Status Badges
+
+You can add these status badges to the top of this README to show build status for each workflow. Replace `3hal0n/Hotello` with your repo path if different.
+
+Frontend workflow badge:
+
+`![Frontend CI](https://github.com/3hal0n/Hotello/actions/workflows/frontend-ci.yml/badge.svg)`
+
+Backend workflow badge:
+
+`![Backend CI](https://github.com/3hal0n/Hotello/actions/workflows/backend-ci.yml/badge.svg)`
+
+Security scan badge:
+
+`![Security Scan](https://github.com/3hal0n/Hotello/actions/workflows/security-scan.yml/badge.svg)`
+
+Format check badge:
+
+`![Format Check](https://github.com/3hal0n/Hotello/actions/workflows/format-check.yml/badge.svg)`
+
+Deploy trigger badge:
+
+`![Deploy Trigger](https://github.com/3hal0n/Hotello/actions/workflows/deploy-trigger.yml/badge.svg)`
+
+### Repository secrets (optional)
+
+- `RENDER_DEPLOY_WEBHOOK` — POST target to trigger backend deploys on Render or Railway (if you want CI to automatically notify your hosting provider). Keep this empty if you prefer provider integrations.
+
 
 1. Push a branch or open a pull request — GitHub Actions will run the workflows.
 2. For manual runs, go to the Actions tab, pick a workflow, and use "Run workflow" (workflow_dispatch is enabled).
