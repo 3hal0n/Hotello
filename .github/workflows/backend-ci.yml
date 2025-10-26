@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -41,3 +42,4 @@ jobs:
         continue-on-error: true
 
   # NOTE: Deployment should be handled by Render provider integrations (connect repo in Render dashboard).
+
