@@ -1,4 +1,4 @@
-name: Backend CI
+﻿name: Backend CI
 
 on:
   push:
@@ -40,4 +40,4 @@ jobs:
         working-directory: ./backend
         continue-on-error: true
 
-  # NOTE: Deployment should be handled by Render / Railway provider integrations (connect repo in their dashboard).
+  # NOTE: Deployment should be handled by Render provider integrations (connect repo in Render dashboard).
