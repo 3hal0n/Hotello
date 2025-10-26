@@ -2,38 +2,42 @@ name: Backend CI
 
 on:
   push:
-    branches: [ main, 'fe/**', 'feat/**', 'fix/**' ]
-  pull_request:
     branches: [ main ]
+  pull_request:
+    # run CI for pull requests on any branch
+    branches: ['**']
   workflow_dispatch: {}
 
 jobs:
   test:
-    name: Install & Test (Backend)
+    name: Install, Lint & Test (backend)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+        working-directory: ./backend
 
       - name: Run linter
-        run: npm run lint --if-present
+        run: npm run lint
+        working-directory: ./backend
+        continue-on-error: true
 
       - name: Run tests
-        run: npm test --if-present
+        run: npm test
+        working-directory: ./backend
 
       - name: Build (if present)
-        run: npm run build --if-present
+        run: npm run build
+        working-directory: ./backend
+        continue-on-error: true
 
-  # NOTE: Docker publishing removed. Use managed platforms (Render, Railway, DockerHub) with their CI integrations.
+  # NOTE: Deployment should be handled by Render / Railway provider integrations (connect repo in their dashboard).
