@@ -238,7 +238,58 @@ npm install
 
 ---
 
-## 📚 Documentation
+## � CI / Deployment
+
+This repository includes CI workflows that validate the frontend and backend on push and pull-request. Deployment is expected to be handled by managed platforms (Vercel / Netlify for the frontend and Render / Railway for the backend).
+
+Workflows added (GitHub Actions):
+
+- `.github/workflows/backend-ci.yml` — runs in the `backend/` folder and performs install, lint, test, and build steps. The previously included Docker publish job has been removed (not required). Use Render or Railway (or your preferred host) for production deployments.
+
+- `.github/workflows/frontend-ci.yml` — runs in the `frontend/` folder and performs install, lint, test, and build steps. No automatic Pages deployment is configured because frontend deploys are typically handled by Vercel or Netlify.
+
+Notes & recommended setup:
+
+- Vercel / Netlify: Connect your GitHub repository to Vercel or Netlify. These providers will build and deploy the `frontend` folder automatically on push to the branches you configure.
+- Render / Railway: Connect the `backend` folder (or root) to Render/Railway; configure the service to run `npm start` (or your start script) and set the required environment variables in their dashboard.
+- Secrets: No GitHub Actions secrets are required for the standard builds. If you integrate any external registries (Docker Hub, container registry, etc.) you would set corresponding secrets in the GitHub repository settings — but this repo's workflows do not depend on them now.
+
+How to trigger CI locally:
+### Status Badges
+
+You can add these status badges to the top of this README to show build status for each workflow. Replace `3hal0n/Hotello` with your repo path if different.
+
+Frontend workflow badge:
+
+`![Frontend CI](https://github.com/3hal0n/Hotello/actions/workflows/frontend-ci.yml/badge.svg)`
+
+Backend workflow badge:
+
+`![Backend CI](https://github.com/3hal0n/Hotello/actions/workflows/backend-ci.yml/badge.svg)`
+
+Security scan badge:
+
+`![Security Scan](https://github.com/3hal0n/Hotello/actions/workflows/security-scan.yml/badge.svg)`
+
+Format check badge:
+
+`![Format Check](https://github.com/3hal0n/Hotello/actions/workflows/format-check.yml/badge.svg)`
+
+Deploy trigger badge:
+
+`![Deploy Trigger](https://github.com/3hal0n/Hotello/actions/workflows/deploy-trigger.yml/badge.svg)`
+
+### Repository secrets (optional)
+
+- `RENDER_DEPLOY_WEBHOOK` — POST target to trigger backend deploys on Render or Railway (if you want CI to automatically notify your hosting provider). Keep this empty if you prefer provider integrations.
+
+
+1. Push a branch or open a pull request — GitHub Actions will run the workflows.
+2. For manual runs, go to the Actions tab, pick a workflow, and use "Run workflow" (workflow_dispatch is enabled).
+
+If you want me to wire up deployments via the Actions (e.g., automatic deploy to Render via API or push to GitHub Container Registry), I can add those steps — otherwise, using the provider integrations is simpler and recommended.
+
+## �📚 Documentation
 
 - **Frontend Complete Guide**: `docs/FRONTEND_COMPLETE.md`
 - **Hero Section**: `docs/NEW_HERO_SECTION.md`
