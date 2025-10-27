@@ -4,29 +4,28 @@ const { stripe } = require('../utils/stripe');
 
 // Get all Hotels
 async function getHotels(req, res) {
-    try{
+    try {
         console.log("Get Hotels Called");
-
         const hotels = await Hotels.find({}).lean();
         res.status(200).json({
             success: true,
             count: hotels.length,
             data: hotels,
         });
-    }
-    catch(error){
+    } catch (error) {
         console.error("Error in getHotels:", error);
         res.status(500).json({
-            success:false,
-            message:"Server Error"});
+            success: false,
+            message: "Server Error"
+        });
     }
+}
 
 // get single hotel
 async function getHotelById(req, res) {
     try {
         const hotelId = req.params.id;
         console.log("Get Hotel By ID Called:", hotelId);
-
         const hotel = await Hotels.findById(hotelId).lean();
         if (!hotel) {
             return res.status(404).json({
@@ -34,7 +33,6 @@ async function getHotelById(req, res) {
                 message: "Hotel not found",
             });
         }
-
         // return found hotel
         return res.status(200).json({
             success: true,
@@ -61,7 +59,6 @@ async function postHotel(req, res) {
         }
         // get data from request body
         const { name, description, location, geo, pricePerNight, roomTypes, amenities, policies, images } = req.body;
-
         // create stripe product
         console.log("Creating Stripe Product");
         const stripeProduct = await stripe.products.create({
@@ -75,7 +72,6 @@ async function postHotel(req, res) {
             },
         });
         console.log("Stripe Product Created:", stripeProduct.id);
-
         // create hotel in db
         const newHotel = new Hotels({
             name,
@@ -91,7 +87,6 @@ async function postHotel(req, res) {
             stripePriceId: stripeProduct.default_price,
             createdAt: Date.now(),
         });
-
         // save to db
         const savedHotel = await newHotel.save();
         console.log("Hotel Saved to DB:", savedHotel._id);
@@ -99,7 +94,6 @@ async function postHotel(req, res) {
             success: true,
             data: savedHotel,
         });
-
     } catch (error) {
         console.error("Error in postHotel:", error);
         res.status(500).json({
@@ -115,7 +109,6 @@ async function updateHotel(req, res) {
         const hotelId = req.params.id;
         const updates = req.body;
         const { userId } = getAuth(req);
-
         // Only allow owner or admin to update
         const hotel = await Hotels.findById(hotelId);
         if (!hotel) {
@@ -124,7 +117,6 @@ async function updateHotel(req, res) {
         if (hotel.ownerId.toString() !== userId) {
             return res.status(403).json({ success: false, message: "Forbidden" });
         }
-
         // Update allowed fields
         const allowedFields = ["name", "description", "location", "geo", "pricePerNight", "roomTypes", "amenities", "policies", "images"];
         for (const key of Object.keys(updates)) {
@@ -142,40 +134,33 @@ async function updateHotel(req, res) {
 
 // Delete Hotel
 async function deleteHotel(req, res) {
-    try{
-    const hotelId=req.params.id;
-    // const {userId}=getAuth(req); // Remove or use this variable
-        const deleteHotel=await Hotels.findByIdAndDelete(hotelId).lean();
-
-        if(!deleteHotel){
+    try {
+        const hotelId = req.params.id;
+        // const {userId}=getAuth(req); // Remove or use this variable
+        const deleteHotel = await Hotels.findByIdAndDelete(hotelId).lean();
+        if (!deleteHotel) {
             return res.status(404).json({
-                success:false,
-                message:"Hotel not found",
+                success: false,
+                message: "Hotel not found",
             });
         }
-
         return res.status(200).json({
             success: true,
             message: 'Hotel deleted',
         });
-    }
-    catch(error){
+    } catch (error) {
         console.error("Error in deleteHotel:", error);
         res.status(500).json({
-            success:false,
-            message:"Server Error"
+            success: false,
+            message: "Server Error"
         });
     }
 }
 
+module.exports = {
     getHotels,
     getHotelById,
     postHotel,
     updateHotel,
-    deleteHotel,
-        getHotels,
-        getHotelById,
-        postHotel,
-        updateHotel,
-        deleteHotel
-    }
+    deleteHotel
+};
