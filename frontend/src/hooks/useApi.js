@@ -115,3 +115,5 @@ export default function useApi() {
     fetchRecommendations
   };
 }
+
+export { useApi };
