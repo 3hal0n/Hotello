@@ -21,6 +21,8 @@ const wishlistRoutes = require('./routes/wishlist');
 app.use('/api/wishlist', wishlistRoutes);
 const paymentsRoutes = require('./routes/payments');
 app.use('/api/payments', paymentsRoutes);
+const chatRoutes = require('./routes/chat');
+app.use('/api/chat', chatRoutes);
 
 // Only connect to MongoDB and start the server when run directly
 if (require.main === module) {
