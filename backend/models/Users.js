@@ -1,25 +1,37 @@
 const mongoose=require('mongoose');
 
-const userSchema=mongoose.Schema({
-    clerId:{
+const userSchema = mongoose.Schema({
+    clerkId: {
         type: String,
         required: true,
     },
-    name:{
+    name: {
         type: String,
         required: true,
     },
-    email:{
-        type:email,
+    email: {
+        type: String,
         required: true,
+        unique: true,
     },
-    role:{
+    phone: {
+        type: String,
+    },
+    address: {
+        type: String,
+    },
+    role: {
         type: String,
         enum: ['user', 'admin', 'hotelOwner'],
+        default: 'user',
     },
-    createdAt:{
-        type:Date,
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    createdAt: {
+        type: Date,
         default: Date.now,
     }
 });
-module.exports=mongoose.model("Users",userSchema);
+module.exports = mongoose.model("Users", userSchema);
