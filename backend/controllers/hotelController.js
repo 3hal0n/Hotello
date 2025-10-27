@@ -20,7 +20,6 @@ async function getHotels(req, res) {
             success:false,
             message:"Server Error"});
     }
-};
 
 // get single hotel
 async function getHotelById(req, res) {
@@ -144,8 +143,8 @@ async function updateHotel(req, res) {
 // Delete Hotel
 async function deleteHotel(req, res) {
     try{
-        const hotelId=req.params.id;
-        const {userId}=getAuth(req);
+    const hotelId=req.params.id;
+    // const {userId}=getAuth(req); // Remove or use this variable
         const deleteHotel=await Hotels.findByIdAndDelete(hotelId).lean();
 
         if(!deleteHotel){
@@ -169,10 +168,14 @@ async function deleteHotel(req, res) {
     }
 }
 
-module.exports = {
     getHotels,
     getHotelById,
     postHotel,
     updateHotel,
     deleteHotel,
-};
+        getHotels,
+        getHotelById,
+        postHotel,
+        updateHotel,
+        deleteHotel
+    }
