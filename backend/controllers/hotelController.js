@@ -5,7 +5,7 @@ const { stripe } = require('../utils/stripe');
 // Get all Hotels
 async function getHotels(req, res) {
     try {
-        console.log("Get Hotels Called");
+        console.log("Get Hotels Called", req.ip, req.headers['user-agent']);
         const hotels = await Hotels.find({}).lean();
         res.status(200).json({
             success: true,

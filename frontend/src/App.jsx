@@ -11,15 +11,13 @@ import Profile from './pages/Profile.jsx';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <header>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </header>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
+      {/* ...existing code... (Navbar is rendered elsewhere) */}
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/hotels' element={<Hotels />} />

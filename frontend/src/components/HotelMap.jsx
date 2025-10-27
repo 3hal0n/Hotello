@@ -11,7 +11,8 @@ export default function HotelMap() {
     fetchHotels().then((data) => {
       if (data.success) setHotels(data.data);
     });
-  }, [fetchHotels]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only fetch once on mount
 
   useEffect(() => {
     if (window.google && hotels.length && mapRef.current) {

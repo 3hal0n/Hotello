@@ -1,4 +1,5 @@
 import { useAuth } from '@clerk/clerk-react';
+import { useCallback } from 'react';
 
 export default function useApi() {
   const { getToken } = useAuth();
@@ -13,92 +14,96 @@ export default function useApi() {
   }
 
   // User endpoints
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async () => {
     const res = await fetch(`${base}/api/users`, { headers: await authHeaders() });
     return res.json();
-  }
+  }, [base]);
 
   // Hotel endpoints
-  async function fetchHotels() {
+  const fetchHotels = useCallback(async () => {
     const res = await fetch(`${base}/api/hotels`);
     return res.json();
-  }
-  async function fetchHotelById(id) {
+  }, [base]);
+  
+  const fetchHotelById = useCallback(async (id) => {
     const res = await fetch(`${base}/api/hotels/${id}`);
     return res.json();
-  }
+  }, [base]);
 
   // Booking endpoints
-  async function createBooking(data) {
+  const createBooking = useCallback(async (data) => {
     const res = await fetch(`${base}/api/bookings`, {
       method: 'POST',
       headers: await authHeaders(),
       body: JSON.stringify(data)
     });
     return res.json();
-  }
-  async function fetchBookings() {
+  }, [base]);
+  
+  const fetchBookings = useCallback(async () => {
     const res = await fetch(`${base}/api/bookings`, { headers: await authHeaders() });
     return res.json();
-  }
+  }, [base]);
 
   // Cart endpoints
-  async function fetchCart() {
+  const fetchCart = useCallback(async () => {
     const res = await fetch(`${base}/api/cart`, { headers: await authHeaders() });
     return res.json();
-  }
-  async function updateCart(data) {
+  }, [base]);
+  
+  const updateCart = useCallback(async (data) => {
     const res = await fetch(`${base}/api/cart`, {
       method: 'PUT',
       headers: await authHeaders(),
       body: JSON.stringify(data)
     });
     return res.json();
-  }
+  }, [base]);
 
   // Wishlist endpoints
-  async function fetchWishlist() {
+  const fetchWishlist = useCallback(async () => {
     const res = await fetch(`${base}/api/wishlist`, { headers: await authHeaders() });
     return res.json();
-  }
-  async function updateWishlist(data) {
+  }, [base]);
+  
+  const updateWishlist = useCallback(async (data) => {
     const res = await fetch(`${base}/api/wishlist`, {
       method: 'PUT',
       headers: await authHeaders(),
       body: JSON.stringify(data)
     });
     return res.json();
-  }
+  }, [base]);
 
   // Stripe payment
-  async function createPaymentSession(data) {
+  const createPaymentSession = useCallback(async (data) => {
     const res = await fetch(`${base}/api/payments/session`, {
       method: 'POST',
       headers: await authHeaders(),
       body: JSON.stringify(data)
     });
     return res.json();
-  }
+  }, [base]);
 
   // AI Chatbot
-  async function sendChatMessage(message) {
+  const sendChatMessage = useCallback(async (message) => {
     const res = await fetch(`${base}/api/chat`, {
       method: 'POST',
       headers: await authHeaders(),
       body: JSON.stringify({ message })
     });
     return res.json();
-  }
+  }, [base]);
 
   // Recommendations
-  async function fetchRecommendations(query) {
+  const fetchRecommendations = useCallback(async (query) => {
     const res = await fetch(`${base}/api/recommendations`, {
       method: 'POST',
       headers: await authHeaders(),
       body: JSON.stringify({ query })
     });
     return res.json();
-  }
+  }, [base]);
 
   return {
     fetchUsers,
