@@ -21,8 +21,15 @@ router.get('/', (req, res) => {
     return res.status(400).send('Invalid url');
   }
 
-  if (!ALLOWED_HOSTS.has(parsed.hostname)) {
+  // Do not allow proxying to local addresses or to this proxy endpoint itself to avoid open/nested proxy loops
+  const host = parsed.hostname;
+  if (!ALLOWED_HOSTS.has(host)) {
     return res.status(403).send('Host not allowed');
+  }
+
+  // Additional safety: forbid proxying any URL that points back to this server or to localhost
+  if (host === 'localhost' || host === '127.0.0.1' || host === req.hostname || parsed.pathname.startsWith('/api/proxy-image')) {
+    return res.status(403).send('Proxying to local or proxy endpoints is not allowed');
   }
 
   const client = parsed.protocol === 'https:' ? https : http;

@@ -34,16 +34,23 @@ export default function HotelCard({ hotel }) {
     glareRef.current.style.opacity = '0';
   };
 
-  const [imgSrc, setImgSrc] = useState(hotel.images && hotel.images[0] ? hotel.images[0].url : null);
+  // keep the original URL in a ref so we never encode an already-proxied URL
+  const originalImg = useRef(hotel.images && hotel.images[0] ? hotel.images[0].url : null);
+  const [imgSrc, setImgSrc] = useState(originalImg.current);
+  const [triedProxy, setTriedProxy] = useState(false);
 
   const handleImgError = () => {
-    if (!imgSrc) return;
-    // fallback to backend proxy to avoid CORS issues
-    try {
-      const proxied = `http://localhost:5000/api/proxy-image?url=${encodeURIComponent(imgSrc)}`;
-      if (imgSrc !== proxied) setImgSrc(proxied);
-    } catch (err) {
-      // ignore
+    // If we haven't tried the proxy yet and we have an original URL, try the backend proxy once.
+    if (!triedProxy && originalImg.current) {
+      const proxied = `http://localhost:5000/api/proxy-image?url=${encodeURIComponent(originalImg.current)}`;
+      setImgSrc(proxied);
+      setTriedProxy(true);
+      return;
+    }
+
+    // If proxy already tried (or no original image), show a graceful placeholder by clearing imgSrc
+    if (triedProxy) {
+      setImgSrc(null);
     }
   };
 
