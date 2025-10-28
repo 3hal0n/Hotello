@@ -320,7 +320,7 @@ export default function Hotels() {
         )}
 
         {/* Hotels Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
@@ -338,7 +338,7 @@ export default function Hotels() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-2">
               {filteredHotels.map((hotel) => (
                 <HotelCard key={hotel._id} hotel={hotel} />
               ))}
