@@ -153,7 +153,7 @@ export default function Hotels() {
       <Navbar />
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-12">
+  <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Discover Your Perfect Stay
@@ -166,7 +166,7 @@ export default function Hotels() {
 
         {/* Search Bar */}
         <div className="bg-white shadow-md sticky top-20 z-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -319,8 +319,8 @@ export default function Hotels() {
           </div>
         )}
 
-        {/* Hotels Grid */}
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    {/* Hotels Grid */}
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-4">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>

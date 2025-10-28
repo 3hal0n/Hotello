@@ -27,6 +27,10 @@ app.use('/api/chat', chatRoutes);
 const recommendationsRoutes = require('./routes/recommendations');
 app.use('/api/recommendations', recommendationsRoutes);
 
+// Image proxy (to avoid CORS issues when loading third-party images)
+const imageProxy = require('./routes/imageProxy');
+app.use('/api/proxy-image', imageProxy);
+
 // Only connect to MongoDB and start the server when run directly
 if (require.main === module) {
   mongoose.connect(MONGO_URI)

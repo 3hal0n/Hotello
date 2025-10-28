@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function HotelCard({ hotel }) {
@@ -34,6 +34,19 @@ export default function HotelCard({ hotel }) {
     glareRef.current.style.opacity = '0';
   };
 
+  const [imgSrc, setImgSrc] = useState(hotel.images && hotel.images[0] ? hotel.images[0].url : null);
+
+  const handleImgError = () => {
+    if (!imgSrc) return;
+    // fallback to backend proxy to avoid CORS issues
+    try {
+      const proxied = `http://localhost:5000/api/proxy-image?url=${encodeURIComponent(imgSrc)}`;
+      if (imgSrc !== proxied) setImgSrc(proxied);
+    } catch (err) {
+      // ignore
+    }
+  };
+
   return (
     <div
       ref={cardRef}
@@ -51,9 +64,10 @@ export default function HotelCard({ hotel }) {
 
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
-        {hotel.images && hotel.images[0] ? (
+        {imgSrc ? (
           <img
-            src={hotel.images[0].url}
+            src={imgSrc}
+            onError={handleImgError}
             alt={hotel.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
