@@ -28,6 +28,37 @@ async function createPaymentIntent(amount, currency = 'lkr') {
   });
 }
 
+// Create a Stripe Checkout session (hosted payment page)
+async function createCheckoutSession({amount, currency = 'lkr', successUrl, cancelUrl, metadata = {}, productName = 'Booking'}) {
+  if (process.env.NODE_ENV === 'production') {
+    return stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency,
+            product_data: { name: productName },
+            unit_amount: Math.round(amount * 100),
+          },
+          quantity: 1,
+        }
+      ],
+      mode: 'payment',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata,
+    });
+  }
+
+  // Development stub: return a fake URL that redirects back to frontend success page
+  const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const sessionId = 'cs_test_123';
+  return {
+    id: sessionId,
+    url: `${frontend}/payment-success?session_id=${sessionId}&bookingId=${metadata.bookingId}`,
+  };
+}
+
 async function refundPayment(paymentIntentId) {
   return stripe.refunds.create({ payment_intent: paymentIntentId });
 }
