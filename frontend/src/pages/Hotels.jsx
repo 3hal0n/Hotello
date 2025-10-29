@@ -40,7 +40,7 @@ export default function Hotels() {
   const fetchHotels = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/hotels');
+  const response = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`);
       const data = await response.json();
       setHotels(data);
       setFilteredHotels(data);
