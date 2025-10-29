@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
 import Hero from '../components/Hero';
+import HotelMap from '../components/HotelMap';
 
 export default function Home() {
   const [hotels, setHotels] = useState([]);
@@ -78,7 +79,7 @@ export default function Home() {
               Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
             </p>
           </div>
-          
+          <HotelMap />
           {hotels.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-600">No hotels available at the moment.</p>

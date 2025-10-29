@@ -1,11 +1,11 @@
 const Bookings = require('../models/Bookings');
 const Hotels = require('../models/Hotels');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 
 // Create booking with roomType, guests, paymentStatus, and improved availability check
 async function createBooking(req, res) {
   try {
-    const { userId } = getAuth(req);
+    // Get userId from auth middleware
+    const userId = req.auth?.userId;
     if (!userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
     const { hotelId, checkIn, checkOut, roomType, guests } = req.body;
@@ -65,7 +65,6 @@ async function getBookingById(req, res) {
     const { id } = req.params;
     const booking = await Bookings.findById(id)
       .populate('hotelId')
-      .populate('userId')
       .lean();
     if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
     res.status(200).json({ success: true, data: booking });
@@ -75,4 +74,18 @@ async function getBookingById(req, res) {
   }
 }
 
-module.exports = { createBooking, getBookingById };
+// Get bookings for current user
+async function getUserBookings(req, res) {
+  try {
+    const userId = req.auth?.userId;
+    if (!userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    const bookings = await Bookings.find({ userId }).populate('hotelId').lean();
+    res.status(200).json({ success: true, data: bookings });
+  } catch (err) {
+    console.error('Error in getUserBookings:', err);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+}
+
+module.exports = { createBooking, getBookingById, getUserBookings };

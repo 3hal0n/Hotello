@@ -22,6 +22,9 @@ router.post('/', clerkAuth, [
 	body('checkOut').isISO8601(),
 ], runValidation, bookingController.createBooking);
 
+// Get bookings for current user
+router.get('/', clerkAuth, bookingController.getUserBookings);
+
 // Get booking by id
 router.get('/:id', clerkAuth, [param('id').isMongoId()], runValidation, bookingController.getBookingById);
 

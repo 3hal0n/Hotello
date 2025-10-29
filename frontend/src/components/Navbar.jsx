@@ -40,6 +40,8 @@ export default function Navbar() {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/hotels', label: 'Hotels' },
+    { path: '/map', label: 'Map' },
+    { path: '/chat', label: 'Chat' },
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact' },
   ];
@@ -47,11 +49,9 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-white/95 backdrop-blur-md shadow-lg'
-            : 'bg-transparent'
-        }`}
+        className={
+          'fixed top-0 left-0 right-0 z-50 bg-white shadow-lg transition-all duration-300'
+        }
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
@@ -105,6 +105,8 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isSignedIn ? (
                 <div className="flex items-center space-x-4">
+                  <Link to="/wishlist" className="text-sm text-gray-700 hover:text-blue-600">Wishlist</Link>
+                  <Link to="/cart" className="text-sm text-gray-700 hover:text-blue-600">Cart</Link>
                   <Link
                     to="/profile"
                     className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
@@ -114,19 +116,12 @@ export default function Navbar() {
                   <UserButton afterSignOutUrl="/" />
                 </div>
               ) : (
-                <>
-                  <SignInButton mode="modal">
-                    <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-all duration-200">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="relative group px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105">
-                      <span className="relative z-10">Sign Up</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </button>
-                  </SignUpButton>
-                </>
+                <SignUpButton mode="modal">
+                  <button className="relative group px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105">
+                    <span className="relative z-10">Sign Up</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
+                </SignUpButton>
               )}
             </div>
 
@@ -229,24 +224,17 @@ export default function Navbar() {
                 <UserButton afterSignOutUrl="/" />
               </div>
             ) : (
-              <>
-                <SignInButton mode="modal">
-                  <button className="w-full px-4 py-3 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg transition-all duration-200">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </>
+              <SignUpButton mode="modal">
+                <button className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg transition-all duration-200">
+                  Sign Up
+                </button>
+              </SignUpButton>
             )}
           </div>
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slideInRight {
           from {
             opacity: 0;

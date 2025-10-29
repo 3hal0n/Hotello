@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function HotelCard({ hotel }) {
@@ -34,6 +34,26 @@ export default function HotelCard({ hotel }) {
     glareRef.current.style.opacity = '0';
   };
 
+  // keep the original URL in a ref so we never encode an already-proxied URL
+  const originalImg = useRef(hotel.images && hotel.images[0] ? hotel.images[0].url : null);
+  const [imgSrc, setImgSrc] = useState(originalImg.current);
+  const [triedProxy, setTriedProxy] = useState(false);
+
+  const handleImgError = () => {
+    // If we haven't tried the proxy yet and we have an original URL, try the backend proxy once.
+    if (!triedProxy && originalImg.current) {
+      const proxied = `http://localhost:5000/api/proxy-image?url=${encodeURIComponent(originalImg.current)}`;
+      setImgSrc(proxied);
+      setTriedProxy(true);
+      return;
+    }
+
+    // If proxy already tried (or no original image), show a graceful placeholder by clearing imgSrc
+    if (triedProxy) {
+      setImgSrc(null);
+    }
+  };
+
   return (
     <div
       ref={cardRef}
@@ -51,9 +71,10 @@ export default function HotelCard({ hotel }) {
 
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
-        {hotel.images && hotel.images[0] ? (
+        {imgSrc ? (
           <img
-            src={hotel.images[0].url}
+            src={imgSrc}
+            onError={handleImgError}
             alt={hotel.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
+import useApi from '../hooks/useApi';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { User, MapPin, Calendar, CreditCard, Heart, Settings, LogOut, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
+  const { user } = useUser();
+  const { signOut } = useAuth();
+  const api = useApi();
   const [activeTab, setActiveTab] = useState('bookings');
   const [bookings, setBookings] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -14,16 +17,17 @@ export default function Profile() {
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [user]);
 
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      // Fetch user bookings
-      const bookingsResponse = await fetch(`http://localhost:3001/api/bookings/user/${user?.id}`);
-      if (bookingsResponse.ok) {
-        const bookingsData = await bookingsResponse.json();
-        setBookings(bookingsData);
+      // Fetch user bookings via API helper (uses auth headers)
+      const bookingsResponse = await api.fetchBookings();
+      if (bookingsResponse && bookingsResponse.success) {
+        setBookings(bookingsResponse.data || []);
+      } else {
+        setBookings([]);
       }
 
       // Fetch favorites (mock data for now)
@@ -163,6 +167,7 @@ export default function Profile() {
                       {bookings.map((booking) => {
                         const status = getBookingStatus(booking);
                         const StatusIcon = status.icon;
+                        const hotel = booking.hotelId || {};
                         return (
                           <div
                             key={booking._id}
@@ -172,8 +177,8 @@ export default function Profile() {
                               {/* Hotel Image */}
                               <div className="md:col-span-1">
                                 <img
-                                  src={booking.hotel?.image || '/hotel1.jpg'}
-                                  alt={booking.hotel?.name}
+                                  src={(hotel.images && hotel.images[0] && hotel.images[0].url) || '/hotel1.jpg'}
+                                  alt={hotel.name}
                                   className="w-full h-48 md:h-full object-cover rounded-xl"
                                 />
                               </div>
@@ -182,11 +187,11 @@ export default function Profile() {
                               <div className="md:col-span-2 space-y-3">
                                 <div>
                                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                    {booking.hotel?.name}
+                                    {hotel.name}
                                   </h3>
                                   <div className="flex items-center text-gray-600 mb-2">
                                     <MapPin className="w-4 h-4 mr-1" />
-                                    <span>{booking.hotel?.location}</span>
+                                    <span>{hotel.location}</span>
                                   </div>
                                 </div>
 
@@ -194,13 +199,13 @@ export default function Profile() {
                                   <div>
                                     <p className="text-gray-500">Check-in</p>
                                     <p className="font-semibold text-gray-900">
-                                      {new Date(booking.checkInDate).toLocaleDateString()}
+                                      {new Date(booking.checkIn).toLocaleDateString()}
                                     </p>
                                   </div>
                                   <div>
                                     <p className="text-gray-500">Check-out</p>
                                     <p className="font-semibold text-gray-900">
-                                      {new Date(booking.checkOutDate).toLocaleDateString()}
+                                      {new Date(booking.checkOut).toLocaleDateString()}
                                     </p>
                                   </div>
                                   <div>
@@ -225,7 +230,7 @@ export default function Profile() {
                                 <div className="text-right">
                                   <p className="text-sm text-gray-500 mb-1">Total Price</p>
                                   <p className="text-3xl font-bold text-gray-900">
-                                    ${booking.totalPrice}
+                                    ${booking.totalAmount}
                                   </p>
                                 </div>
                               </div>

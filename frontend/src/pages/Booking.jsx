@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import useApi from '../hooks/useApi';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -9,10 +10,13 @@ export default function Booking() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { getToken, isSignedIn } = useAuth();
+  const api = useApi();
   
   const [hotel, setHotel] = useState(null);
   const [checkIn, setCheckIn] = useState(searchParams.get('checkIn') || '');
   const [checkOut, setCheckOut] = useState(searchParams.get('checkOut') || '');
+  const [roomType, setRoomType] = useState('');
+  const [guests, setGuests] = useState(1);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -30,6 +34,10 @@ export default function Booking() {
       .then((data) => {
         if (data.success) {
           setHotel(data.data);
+          // Set default room type to the first available room type
+          if (data.data.roomTypes && data.data.roomTypes.length > 0) {
+            setRoomType(data.data.roomTypes[0].type);
+          }
         } else {
           setError('Hotel not found');
         }
@@ -42,21 +50,25 @@ export default function Booking() {
       });
   }, [id, isSignedIn, navigate]);
 
-  // Calculate price when dates change
+  // Calculate price when dates or room type change
   useEffect(() => {
-    if (checkIn && checkOut && hotel) {
+    if (checkIn && checkOut && hotel && roomType) {
       const ci = new Date(checkIn);
       const co = new Date(checkOut);
       if (co > ci) {
         const nightsCount = Math.ceil((co - ci) / (1000 * 60 * 60 * 24));
         setNights(nightsCount);
-        setTotalPrice(nightsCount * hotel.pricePerNight);
+        
+        // Find the selected room type price
+        const selectedRoom = hotel.roomTypes?.find(rt => rt.type === roomType);
+        const pricePerNight = selectedRoom?.price || hotel.pricePerNight;
+        setTotalPrice(nightsCount * pricePerNight * guests);
       } else {
         setNights(0);
         setTotalPrice(0);
       }
     }
-  }, [checkIn, checkOut, hotel]);
+  }, [checkIn, checkOut, hotel, roomType, guests]);
 
   async function handlePayNow(e) {
     e.preventDefault();
@@ -75,32 +87,18 @@ export default function Booking() {
     setError(null);
 
     try {
-      const token = await getToken();
-      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/bookings`, {
-        method: 'POST',
-        headers: { 
-          Authorization: `Bearer ${token}`, 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ 
-          hotelId: id, 
-          checkIn, 
-          checkOut 
-        }),
-      });
-
-      const data = await res.json();
-      
-      if (res.ok) {
-        // In a real app, this would redirect to payment/Stripe checkout
-        alert(`Booking created successfully! Booking ID: ${data.data._id}`);
-        navigate('/'); // Navigate back to home for now
+      // Create booking + checkout session via backend which will return a Stripe Checkout URL
+      const payload = { hotelId: id, checkIn, checkOut, roomType, guests, totalAmount: totalPrice };
+      const result = await api.createPaymentSession(payload);
+      if (result && result.url) {
+        // Redirect to Stripe hosted checkout
+        window.location.href = result.url;
       } else {
-        setError(data.message || 'Booking failed');
+        setError(result.message || 'Failed to initiate payment');
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to create booking. Please try again.');
+      setError('Failed to create payment session. Please try again.');
     } finally {
       setProcessing(false);
     }
@@ -193,6 +191,39 @@ export default function Booking() {
               <form onSubmit={handlePayNow} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Room Type
+                  </label>
+                  <select
+                    value={roomType}
+                    onChange={(e) => setRoomType(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {hotel.roomTypes && hotel.roomTypes.map((rt) => (
+                      <option key={rt.type} value={rt.type}>
+                        {rt.type} - ${rt.price}/night ({rt.available} available)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Number of Guests
+                  </label>
+                  <input
+                    type="number"
+                    value={guests}
+                    onChange={(e) => setGuests(parseInt(e.target.value) || 1)}
+                    min="1"
+                    max="10"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Check-in Date
                   </label>
                   <input
@@ -220,12 +251,18 @@ export default function Booking() {
                 </div>
 
                 {/* Price Breakdown */}
-                {nights > 0 && (
+                {nights > 0 && roomType && (
                   <div className="bg-blue-50 rounded-lg p-6 space-y-3">
                     <h3 className="font-semibold text-lg mb-4">Price Details</h3>
                     <div className="flex justify-between text-gray-700">
+                      <span>{roomType} Room</span>
                       <span>
-                        ${hotel.pricePerNight} × {nights} night{nights !== 1 ? 's' : ''}
+                        ${hotel.roomTypes?.find(rt => rt.type === roomType)?.price || hotel.pricePerNight}/night
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-700">
+                      <span>
+                        {nights} night{nights !== 1 ? 's' : ''} × {guests} guest{guests !== 1 ? 's' : ''}
                       </span>
                       <span>${totalPrice}</span>
                     </div>
@@ -242,7 +279,7 @@ export default function Booking() {
 
                 <button
                   type="submit"
-                  disabled={processing || !checkIn || !checkOut || nights <= 0}
+                  disabled={processing || !checkIn || !checkOut || !roomType || nights <= 0}
                   className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {processing ? (

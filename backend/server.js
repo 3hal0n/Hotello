@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -15,6 +16,20 @@ const hotelsRoutes = require('./routes/hotels');
 app.use('/api/hotels', hotelsRoutes);
 const bookingsRoutes = require('./routes/bookings');
 app.use('/api/bookings', bookingsRoutes);
+const cartRoutes = require('./routes/cart');
+app.use('/api/cart', cartRoutes);
+const wishlistRoutes = require('./routes/wishlist');
+app.use('/api/wishlist', wishlistRoutes);
+const paymentsRoutes = require('./routes/payments');
+app.use('/api/payments', paymentsRoutes);
+const chatRoutes = require('./routes/chat');
+app.use('/api/chat', chatRoutes);
+const recommendationsRoutes = require('./routes/recommendations');
+app.use('/api/recommendations', recommendationsRoutes);
+
+// Image proxy (to avoid CORS issues when loading third-party images)
+const imageProxy = require('./routes/imageProxy');
+app.use('/api/proxy-image', imageProxy);
 
 // Only connect to MongoDB and start the server when run directly
 if (require.main === module) {

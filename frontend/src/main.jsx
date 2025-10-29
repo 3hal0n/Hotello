@@ -16,9 +16,7 @@ import App from './App.jsx'
   }
 
   createRoot(rootEl).render(
-    <StrictMode>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        <App />
-      </ClerkProvider>
-    </StrictMode>,
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <App />
+    </ClerkProvider>
   )
