@@ -1,5 +1,4 @@
 const OpenAI = require('openai');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -8,7 +7,7 @@ const openai = new OpenAI({
 // Proxy user message to OpenAI API
 async function chatWithAI(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const { message } = req.body;
     if (!message) {
       return res.status(400).json({ success: false, message: 'Message required' });

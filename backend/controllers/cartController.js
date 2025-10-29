@@ -1,10 +1,9 @@
 const Cart = require('../models/Cart');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 
 // Get cart for current user
 async function getCart(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const cart = await Cart.findOne({ userId }).populate('items.hotelId');
     res.json({ success: true, data: cart });
   } catch (error) {
@@ -15,7 +14,7 @@ async function getCart(req, res) {
 // Update cart for current user
 async function updateCart(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const { items } = req.body;
     const cart = await Cart.findOneAndUpdate(
       { userId },

@@ -1,4 +1,4 @@
-const { verifySessionToken, users } = require('@clerk/clerk-sdk-node');
+const { clerkClient } = require('@clerk/clerk-sdk-node');
 
 async function clerkAuth(req, res, next) {
   const header = req.headers.authorization;
@@ -8,11 +8,15 @@ async function clerkAuth(req, res, next) {
   const token = header.replace('Bearer ', '');
 
   try {
-    const session = await verifySessionToken(token);
-    const user = await users.getUser(session.userId);
+    // Use verifyToken to verify the session token
+    const decoded = await clerkClient.verifyToken(token);
+    
+    // Get user information
+    const user = await clerkClient.users.getUser(decoded.sub);
+    
     req.auth = {
-      userId: session.userId,
-      sessionId: session.id,
+      userId: decoded.sub,
+      sessionId: decoded.sid,
       role: user.publicMetadata?.role || 'user',
     };
     next();

@@ -1,5 +1,4 @@
 const Hotels = require('../models/Hotels');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 const { stripe } = require('../utils/stripe');
 
 // Get all Hotels
@@ -50,7 +49,7 @@ async function getHotelById(req, res) {
 // create new hotel with roomTypes, geo, policies
 async function postHotel(req, res) {
     try {
-        const { userId } = getAuth(req);
+        const userId = req.auth?.userId;
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -108,7 +107,7 @@ async function updateHotel(req, res) {
     try {
         const hotelId = req.params.id;
         const updates = req.body;
-        const { userId } = getAuth(req);
+        const userId = req.auth?.userId;
         // Only allow owner or admin to update
         const hotel = await Hotels.findById(hotelId);
         if (!hotel) {

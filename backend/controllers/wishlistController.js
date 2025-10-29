@@ -1,10 +1,9 @@
 const Wishlist = require('../models/Wishlist');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 
 // Get wishlist for current user
 async function getWishlist(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const wishlist = await Wishlist.findOne({ userId }).populate('hotels');
     res.json({ success: true, data: wishlist });
   } catch (error) {
@@ -15,7 +14,7 @@ async function getWishlist(req, res) {
 // Update wishlist for current user
 async function updateWishlist(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const { hotels } = req.body;
     const wishlist = await Wishlist.findOneAndUpdate(
       { userId },

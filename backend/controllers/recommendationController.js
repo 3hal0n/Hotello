@@ -1,6 +1,5 @@
 const Hotels = require('../models/Hotels');
 const OpenAI = require('openai');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -9,7 +8,7 @@ const openai = new OpenAI({
 // AI-powered hotel recommendations based on emotion/keywords
 async function getRecommendations(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const { query } = req.body;
     if (!query) {
       return res.status(400).json({ success: false, message: 'Query required' });

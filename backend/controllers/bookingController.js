@@ -1,11 +1,11 @@
 const Bookings = require('../models/Bookings');
 const Hotels = require('../models/Hotels');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 
 // Create booking with roomType, guests, paymentStatus, and improved availability check
 async function createBooking(req, res) {
   try {
-    const { userId } = getAuth(req);
+    // Get userId from auth middleware
+    const userId = req.auth?.userId;
     if (!userId) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
     const { hotelId, checkIn, checkOut, roomType, guests } = req.body;

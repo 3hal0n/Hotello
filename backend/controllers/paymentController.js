@@ -1,11 +1,10 @@
 const { createPaymentIntent } = require('../utils/stripe');
-const { getAuth } = require('@clerk/clerk-sdk-node');
 const Bookings = require('../models/Bookings');
 
 // Create Stripe payment session for a booking
 async function createPaymentSession(req, res) {
   try {
-    const { userId } = getAuth(req);
+    const userId = req.auth?.userId;
     const { bookingId } = req.body;
     const booking = await Bookings.findOne({ _id: bookingId, userId });
     if (!booking) {
