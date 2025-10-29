@@ -30,7 +30,7 @@ const sriLankanHotels = Array.from({ length: 20 }, (_, i) => ({
   amenities: ['Pool', 'Spa', 'Gym', 'WiFi', 'Restaurant', 'Bar', 'Beach Access', 'Room Service'],
   policies: 'Check-in: 2pm, Check-out: 12pm',
   images: Array.from({ length: 10 }, (_, j) => ({
-    url: `https://cf.bstatic.com/xdata/images/hotel/max1024x768/${i + 1}${j + 1}0000.jpg`,
+    url: `https://picsum.photos/seed/hotel${i}img${j}/1024/768`,
     public_id: `hotel_${i}_img_${j}`
   })),
   rating: 4.5 + (i % 5) * 0.1
