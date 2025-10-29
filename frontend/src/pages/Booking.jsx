@@ -88,7 +88,6 @@ export default function Booking() {
 
     try {
       // Create booking + checkout session via backend which will return a Stripe Checkout URL
-      const api = useApi();
       const payload = { hotelId: id, checkIn, checkOut, roomType, guests, totalAmount: totalPrice };
       const result = await api.createPaymentSession(payload);
       if (result && result.url) {
