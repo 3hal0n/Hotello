@@ -8,6 +8,11 @@ import Booking from './pages/Booking.jsx';
 import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import Profile from './pages/Profile.jsx';
+import Cart from './pages/Cart.jsx';
+import Wishlist from './pages/Wishlist.jsx';
+import Chat from './pages/Chat.jsx';
+import MapView from './pages/MapView.jsx';
+import PaymentSuccess from './pages/PaymentSuccess.jsx';
 
 export default function App() {
   return (
@@ -23,6 +28,11 @@ export default function App() {
         <Route path='/hotels' element={<Hotels />} />
         <Route path='/hotels/:id' element={<HotelDetails />} />
         <Route path='/booking/:id' element={<Booking />} />
+  <Route path='/cart' element={<Cart />} />
+  <Route path='/wishlist' element={<Wishlist />} />
+  <Route path='/chat' element={<Chat />} />
+  <Route path='/map' element={<MapView />} />
+  <Route path='/payment-success' element={<PaymentSuccess />} />
         <Route path='/about' element={<About />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/profile' element={<Profile />} />

@@ -40,6 +40,8 @@ export default function Navbar() {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/hotels', label: 'Hotels' },
+    { path: '/map', label: 'Map' },
+    { path: '/chat', label: 'Chat' },
     { path: '/about', label: 'About' },
     { path: '/contact', label: 'Contact' },
   ];
@@ -103,6 +105,8 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isSignedIn ? (
                 <div className="flex items-center space-x-4">
+                  <Link to="/wishlist" className="text-sm text-gray-700 hover:text-blue-600">Wishlist</Link>
+                  <Link to="/cart" className="text-sm text-gray-700 hover:text-blue-600">Cart</Link>
                   <Link
                     to="/profile"
                     className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"

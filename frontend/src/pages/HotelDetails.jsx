@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import useApi from '../hooks/useApi';
 import CircularGallery from '../components/CircularGallery';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -9,6 +10,7 @@ export default function HotelDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isSignedIn } = useAuth();
+  const api = useApi();
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +70,55 @@ export default function HotelDetails() {
     }
     // Navigate to booking page with dates
     navigate(`/booking/${hotel._id}?checkIn=${checkIn}&checkOut=${checkOut}`);
+  };
+
+  const addToWishlist = async () => {
+    if (!isSignedIn) {
+      alert('Please sign in to add to wishlist');
+      return;
+    }
+    try {
+      const res = await api.fetchWishlist();
+      let hotels = [];
+      if (res && res.success && res.data && Array.isArray(res.data.hotels)) {
+        hotels = res.data.hotels.map(h => (typeof h === 'string' ? h : h._id));
+      }
+      if (!hotels.includes(hotel._id)) hotels.push(hotel._id);
+      await api.updateWishlist({ hotels });
+      alert('Added to wishlist');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to add to wishlist');
+    }
+  };
+
+  const addToCart = async () => {
+    if (!isSignedIn) {
+      alert('Please sign in to add to cart');
+      return;
+    }
+    try {
+      const res = await api.fetchCart();
+      let items = [];
+      if (res && res.success && res.data && Array.isArray(res.data.items)) {
+        items = res.data.items;
+      }
+      const item = {
+        hotelId: hotel._id,
+        roomType: hotel.roomTypes && hotel.roomTypes[0] ? hotel.roomTypes[0].type : '',
+        checkIn: null,
+        checkOut: null,
+        guests: 1,
+        price: hotel.pricePerNight,
+        image: hotel.images && hotel.images[0] ? hotel.images[0].url : '',
+      };
+      items.push(item);
+      await api.updateCart({ items });
+      alert('Added to cart');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to add to cart');
+    }
   };
 
   if (loading) {
@@ -244,6 +295,10 @@ export default function HotelDetails() {
                     You need to sign in to make a booking
                   </p>
                 )}
+                <div className="mt-4 flex gap-3">
+                  <button onClick={addToCart} className="flex-1 px-4 py-2 bg-white border rounded-lg hover:shadow">Add to Cart</button>
+                  <button onClick={addToWishlist} className="flex-1 px-4 py-2 bg-white border rounded-lg hover:shadow">Add to Wishlist</button>
+                </div>
               </div>
             </div>
           </div>

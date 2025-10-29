@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import useApi from '../hooks/useApi';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -9,6 +10,7 @@ export default function Booking() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { getToken, isSignedIn } = useAuth();
+  const api = useApi();
   
   const [hotel, setHotel] = useState(null);
   const [checkIn, setCheckIn] = useState(searchParams.get('checkIn') || '');
@@ -85,34 +87,19 @@ export default function Booking() {
     setError(null);
 
     try {
-      const token = await getToken();
-      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/bookings`, {
-        method: 'POST',
-        headers: { 
-          Authorization: `Bearer ${token}`, 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ 
-          hotelId: id, 
-          checkIn, 
-          checkOut,
-          roomType,
-          guests
-        }),
-      });
-
-      const data = await res.json();
-      
-      if (res.ok) {
-        // In a real app, this would redirect to payment/Stripe checkout
-        alert(`Booking created successfully! Booking ID: ${data.data._id}`);
-        navigate('/'); // Navigate back to home for now
+      // Create booking + checkout session via backend which will return a Stripe Checkout URL
+      const api = useApi();
+      const payload = { hotelId: id, checkIn, checkOut, roomType, guests, totalAmount: totalPrice };
+      const result = await api.createPaymentSession(payload);
+      if (result && result.url) {
+        // Redirect to Stripe hosted checkout
+        window.location.href = result.url;
       } else {
-        setError(data.message || 'Booking failed');
+        setError(result.message || 'Failed to initiate payment');
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to create booking. Please try again.');
+      setError('Failed to create payment session. Please try again.');
     } finally {
       setProcessing(false);
     }
