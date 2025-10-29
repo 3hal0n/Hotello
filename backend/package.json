@@ -22,7 +22,8 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "mongoose": "^8.18.2",
-    "openai": "^6.7.0"
+    "openai": "^6.7.0",
+    "stripe": "^19.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",

@@ -37,11 +37,11 @@ async function createPaymentSession(req, res) {
 
     const session = await createCheckoutSession({
       amount: booking.totalAmount,
-      currency: 'lkr',
+      currency: 'usd',
       successUrl,
       cancelUrl,
       metadata: { bookingId: booking._id.toString() },
-      productName: `Booking - ${booking.hotelId}`,
+      productName: `Hotel Booking - ${booking.hotelId}`,
     });
 
     // Optionally record a Payments entry with status pending
@@ -57,25 +57,22 @@ async function createPaymentSession(req, res) {
 // Webhook to receive Stripe events (checkout.session.completed)
 async function paymentWebhook(req, res) {
   try {
-    // In production verify signature. In development we accept JSON body.
     const event = req.body;
 
-    // Support both Stripe event structure and our dev stub
-    const type = event.type || event?.data?.type || (event && event.eventType);
-    const obj = event.data?.object || event;
+    // In development, accept JSON events without signature verification
+    // In production, you should verify the webhook signature using stripe.webhooks.constructEvent
+    // For now, we'll accept the events as-is for testing
+    const type = event.type;
 
-    if (type === 'checkout.session.completed' || type === 'checkout.session.succeeded') {
-      const bookingId = obj.metadata?.bookingId;
+    if (type === 'checkout.session.completed' || type === 'checkout.session.async_payment_succeeded') {
+      const session = event.data.object;
+      const bookingId = session.metadata?.bookingId;
+      
       if (bookingId) {
         await Bookings.findByIdAndUpdate(bookingId, { paymentStatus: 'paid' });
         await Payments.findOneAndUpdate({ bookingId }, { status: 'completed' });
+        console.log(`Payment completed for booking ${bookingId}`);
       }
-    }
-
-    // dev-stub also supports an explicit payload
-    if (event && event.metadata && event.metadata.bookingId && (event.type === 'dev.checkout.completed')) {
-      await Bookings.findByIdAndUpdate(event.metadata.bookingId, { paymentStatus: 'paid' });
-      await Payments.findOneAndUpdate({ bookingId: event.metadata.bookingId }, { status: 'completed' });
     }
 
     res.json({ received: true });

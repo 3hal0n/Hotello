@@ -45,6 +45,11 @@ export default function useApi() {
     return res.json();
   }, [base]);
 
+  const fetchBookingById = useCallback(async (id) => {
+    const res = await fetch(`${base}/api/bookings/${id}`, { headers: await authHeaders() });
+    return res.json();
+  }, [base]);
+
   // Cart endpoints
   const fetchCart = useCallback(async () => {
     const res = await fetch(`${base}/api/cart`, { headers: await authHeaders() });
@@ -118,6 +123,8 @@ export default function useApi() {
     createPaymentSession,
     sendChatMessage,
     fetchRecommendations
+    ,
+    fetchBookingById
   };
 }
 
