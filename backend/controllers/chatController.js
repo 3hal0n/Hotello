@@ -23,7 +23,14 @@ async function chatWithAI(req, res) {
     const aiResponse = completion.choices[0].message.content;
     res.json({ success: true, response: aiResponse });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'AI chat error' });
+    console.error('AI chat error:', {
+      error: error,
+      userId,
+      body: req.body,
+      auth: req.auth,
+      openaiKey: process.env.OPENAI_API_KEY ? 'set' : 'missing',
+    });
+    res.status(500).json({ success: false, message: 'AI chat error', error: error.message });
   }
 }
 
