@@ -34,24 +34,20 @@ export default function HotelCard({ hotel }) {
     glareRef.current.style.opacity = '0';
   };
 
-  // keep the original URL in a ref so we never encode an already-proxied URL
-  const originalImg = useRef(hotel.images && hotel.images[0] ? hotel.images[0].url : null);
-  const [imgSrc, setImgSrc] = useState(originalImg.current);
-  const [triedProxy, setTriedProxy] = useState(false);
+  // Use local image assets instead of online URLs
+  const getLocalImage = () => {
+    if (!hotel.name) return null;
+    // Convert hotel name to folder name (lowercase, spaces to hyphens)
+    const folderName = hotel.name.toLowerCase().replace(/\s+/g, '-');
+    // Use first image by default (img1.jpg)
+    return `/assets/img/${folderName}/img1.jpg`;
+  };
+
+  const [imgSrc, setImgSrc] = useState(getLocalImage());
+  const [imgError, setImgError] = useState(false);
 
   const handleImgError = () => {
-    // If we haven't tried the proxy yet and we have an original URL, try the backend proxy once.
-    if (!triedProxy && originalImg.current) {
-      const proxied = `http://localhost:5000/api/proxy-image?url=${encodeURIComponent(originalImg.current)}`;
-      setImgSrc(proxied);
-      setTriedProxy(true);
-      return;
-    }
-
-    // If proxy already tried (or no original image), show a graceful placeholder by clearing imgSrc
-    if (triedProxy) {
-      setImgSrc(null);
-    }
+    setImgError(true);
   };
 
   return (
@@ -71,7 +67,7 @@ export default function HotelCard({ hotel }) {
 
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">
-        {imgSrc ? (
+        {imgSrc && !imgError ? (
           <img
             src={imgSrc}
             onError={handleImgError}
@@ -79,8 +75,13 @@ export default function HotelCard({ hotel }) {
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-400">No image</span>
+          <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+            <div className="text-center">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-gray-500 text-sm mt-2">{hotel.name}</span>
+            </div>
           </div>
         )}
         

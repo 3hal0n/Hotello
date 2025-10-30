@@ -34,24 +34,52 @@ export default function Hotels() {
   }, []);
 
   useEffect(() => {
-    applyFilters();
+    // Only apply filters if hotels are loaded
+    if (hotels.length > 0) {
+      applyFilters();
+    }
   }, [filters, hotels]);
 
   const fetchHotels = async () => {
     try {
       setLoading(true);
-  const response = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`);
       const data = await response.json();
-      setHotels(data);
-      setFilteredHotels(data);
+      
+      console.log('Hotels API Response:', data);
+      console.log('Response type:', typeof data);
+      console.log('Is array?:', Array.isArray(data));
+      
+      // Handle API response structure - same as Home page
+      if (data.success && data.data && Array.isArray(data.data)) {
+        console.log('Setting hotels from data.data:', data.data.length, 'hotels');
+        setHotels(data.data);
+        setFilteredHotels(data.data);
+      } else if (Array.isArray(data)) {
+        console.log('Setting hotels from direct array:', data.length, 'hotels');
+        setHotels(data);
+        setFilteredHotels(data);
+      } else {
+        console.log('No valid hotel data found');
+        setHotels([]);
+        setFilteredHotels([]);
+      }
     } catch (error) {
       console.error('Error fetching hotels:', error);
+      setHotels([]);
+      setFilteredHotels([]);
     } finally {
       setLoading(false);
     }
   };
 
   const applyFilters = () => {
+    // Don't filter if hotels aren't loaded yet
+    if (hotels.length === 0) {
+      setFilteredHotels([]);
+      return;
+    }
+
     let result = [...hotels];
 
     // Search filter
@@ -70,9 +98,10 @@ export default function Hotels() {
     }
 
     // Price range filter
-    result = result.filter(hotel =>
-      hotel.price >= filters.priceRange[0] && hotel.price <= filters.priceRange[1]
-    );
+    result = result.filter(hotel => {
+      const price = hotel.pricePerNight || hotel.price || 0;
+      return price >= filters.priceRange[0] && price <= filters.priceRange[1];
+    });
 
     // Rating filter
     if (filters.rating > 0) {
@@ -85,17 +114,16 @@ export default function Hotels() {
         filters.amenities.every(amenity => hotel.amenities?.includes(amenity))
       );
     }
-
     // Sorting
     switch (filters.sortBy) {
       case 'price-low':
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => (a.pricePerNight || a.price || 0) - (b.pricePerNight || b.price || 0));
         break;
       case 'price-high':
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => (b.pricePerNight || b.price || 0) - (a.pricePerNight || a.price || 0));
         break;
       case 'rating':
-        result.sort((a, b) => b.rating - a.rating);
+        result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       default:
         // featured - no sorting needed
@@ -153,7 +181,7 @@ export default function Hotels() {
       <Navbar />
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Header Section */}
-  <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-6">
+  <div className="bg-gradient-to-b from-gray-900 to-black py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Discover Your Perfect Stay
