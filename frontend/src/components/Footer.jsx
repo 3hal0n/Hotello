@@ -65,7 +65,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
+    <footer className="bg-gradient-to-b from-gray-900 to-black border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12 mb-12">
@@ -75,18 +75,18 @@ export default function Footer() {
               <div className="relative">
                 <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
                 <svg
-                  className="relative w-8 h-8 text-blue-600"
+                  className="relative w-8 h-8 text-blue-500"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path d="M19 9.199h-.98c-.553 0-1 .359-1 .801v10c0 .441.447.801 1 .801h.98c.553 0 1-.36 1-.801V10c0-.442-.447-.801-1-.801zM12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm7.931 9h-2.764a14.67 14.67 0 0 0-1.792-6.243A8.013 8.013 0 0 1 19.931 11zM12.53 4.027c1.035 1.364 2.427 3.78 2.627 6.973H9.03c.139-2.596.994-5.028 2.451-6.974.172-.01.344-.026.519-.026.179 0 .354.016.53.027zm-3.842.7C7.704 6.618 7.136 8.762 7.03 11H4.069a8.013 8.013 0 0 1 4.619-6.273zM4.069 13h2.974c.136 2.379.665 4.478 1.556 6.23A8.01 8.01 0 0 1 4.069 13zm7.381 6.973C10.049 18.275 9.222 15.896 9.041 13h6.113c-.208 2.773-1.117 5.196-2.603 6.972-.182.012-.364.028-.551.028-.186 0-.367-.016-.55-.027zm4.011-.772c.955-1.794 1.538-3.901 1.691-6.201h2.778a8.005 8.005 0 0 1-4.469 6.201z"/>
                 </svg>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Hotello
               </span>
             </Link>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4 max-w-xs">
+            <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-xs">
               Discover and book the finest hotels across Sri Lanka. Your perfect stay is just a click away.
             </p>
             {/* Social Links */}
@@ -97,7 +97,7 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300 hover:scale-110"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 text-gray-400 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300 hover:scale-110"
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -108,7 +108,7 @@ export default function Footer() {
 
           {/* Links Sections */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Company
             </h3>
             <ul className="space-y-3">
@@ -116,7 +116,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-block hover:translate-x-1 transform"
+                    className="text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200 inline-block hover:translate-x-1 transform"
                   >
                     {link.label}
                   </Link>
@@ -126,7 +126,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Support
             </h3>
             <ul className="space-y-3">
@@ -134,7 +134,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-block hover:translate-x-1 transform"
+                    className="text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200 inline-block hover:translate-x-1 transform"
                   >
                     {link.label}
                   </Link>
@@ -144,7 +144,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Explore
             </h3>
             <ul className="space-y-3">
@@ -152,7 +152,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 inline-block hover:translate-x-1 transform"
+                    className="text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200 inline-block hover:translate-x-1 transform"
                   >
                     {link.label}
                   </Link>
@@ -163,21 +163,21 @@ export default function Footer() {
         </div>
 
         {/* Newsletter Section */}
-        <div className="border-t border-gray-200 pt-8 mb-8">
+        <div className="border-t border-gray-800 pt-8 mb-8">
           <div className="max-w-md mx-auto lg:mx-0">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
               Subscribe to Our Newsletter
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-400 mb-4">
               Get the latest deals and travel inspiration delivered to your inbox.
             </p>
             <div className="flex gap-2">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2.5 text-sm bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
               />
-              <button className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105 whitespace-nowrap">
+              <button className="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-200 hover:scale-105 whitespace-nowrap">
                 Subscribe
               </button>
             </div>
@@ -185,27 +185,27 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-200 pt-8">
+        <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-400">
               © {currentYear} Hotello. All rights reserved.
             </p>
             <div className="flex items-center space-x-6">
               <Link
                 to="/privacy"
-                className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                className="text-sm text-gray-400 hover:text-blue-400 transition-colors"
               >
                 Privacy Policy
               </Link>
               <Link
                 to="/terms"
-                className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                className="text-sm text-gray-400 hover:text-blue-400 transition-colors"
               >
                 Terms of Service
               </Link>
               <Link
                 to="/cookies"
-                className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+                className="text-sm text-gray-400 hover:text-blue-400 transition-colors"
               >
                 Cookie Policy
               </Link>
