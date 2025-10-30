@@ -96,7 +96,69 @@ export default function Home() {
                   Explore our handpicked selection of luxury hotels across Sri Lanka's most beautiful destinations
                 </p>
               </div>
-              <HotelMap />
+
+              {/* Search and Filter Section */}
+              <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex flex-col md:flex-row gap-4 items-center">
+                  {/* Search Input */}
+                  <div className="flex-1 w-full">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search hotels by name or location..."
+                        className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onChange={(e) => {
+                          const query = e.target.value.toLowerCase();
+                          if (query === '') {
+                            setHotels(hotels);
+                          } else {
+                            const filtered = hotels.filter(h => 
+                              h.name.toLowerCase().includes(query) || 
+                              h.location.toLowerCase().includes(query)
+                            );
+                            setHotels(filtered);
+                          }
+                        }}
+                      />
+                      <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Price Filter */}
+                  <div className="w-full md:w-48">
+                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <option value="">Price Range</option>
+                      <option value="0-100">$0 - $100</option>
+                      <option value="100-200">$100 - $200</option>
+                      <option value="200-500">$200 - $500</option>
+                      <option value="500+">$500+</option>
+                    </select>
+                  </div>
+
+                  {/* Rating Filter */}
+                  <div className="w-full md:w-48">
+                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <option value="">Any Rating</option>
+                      <option value="4">4+ Stars</option>
+                      <option value="4.5">4.5+ Stars</option>
+                      <option value="4.8">4.8+ Stars</option>
+                    </select>
+                  </div>
+
+                  {/* Sort By */}
+                  <div className="w-full md:w-48">
+                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <option value="featured">Featured</option>
+                      <option value="price-low">Price: Low to High</option>
+                      <option value="price-high">Price: High to Low</option>
+                      <option value="rating">Highest Rated</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
               {hotels.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-600">No hotels available at the moment.</p>
