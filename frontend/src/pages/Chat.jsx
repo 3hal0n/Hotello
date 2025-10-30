@@ -73,7 +73,7 @@ export default function Chat() {
       <Navbar />
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-12">
+        <div className="bg-gradient-to-b from-gray-900 to-black py-12">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm mb-4">
               <Sparkles className="w-10 h-10 text-white" />

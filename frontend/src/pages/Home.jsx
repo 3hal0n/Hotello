@@ -152,7 +152,7 @@ export default function Home() {
           <Navbar />
           <div className="h-10"></div>
           <Hero onEmotionSearch={handleEmotionSearch} />
-          <section className="bg-gradient-to-b from-gray-50 to-white py-20 px-4 sm:px-6 lg:px-8">
+          <section id="hotels-section" className="bg-gradient-to-b from-gray-50 to-white py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -163,12 +163,58 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Enhanced Search and Filter Section */}
+              {/* Enhanced Search and Filter Section with AI Emotion */}
               <div className="mb-8 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <Filter className="w-5 h-5 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Search & Filter</h3>
+                {/* Section Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Filter className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-lg font-semibold text-gray-900">Search & Filter</h3>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setPriceRange('');
+                      setRating('');
+                      setSortBy('featured');
+                    }}
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Clear All
+                  </button>
                 </div>
+
+                {/* AI Emotion Quick Search */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-5 h-5 text-blue-600" />
+                    <h4 className="text-sm font-semibold text-gray-900">AI Emotion-Driven Search</h4>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">Find hotels that match your mood and preferences</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { emoji: "😌", label: "Relaxing", query: "peaceful relaxing spa wellness quiet serene" },
+                      { emoji: "🎉", label: "Exciting", query: "vibrant nightlife entertainment activities adventure" },
+                      { emoji: "💑", label: "Romantic", query: "romantic couples intimate cozy candlelit" },
+                      { emoji: "👨‍👩‍👧‍👦", label: "Family", query: "family kids children playground activities pool" },
+                      { emoji: "💼", label: "Business", query: "business conference meeting workspace professional" },
+                      { emoji: "🏖️", label: "Beach", query: "beach ocean seaside coastal beachfront" },
+                    ].map((emotion) => (
+                      <button
+                        key={emotion.label}
+                        onClick={() => setSearchQuery(emotion.query)}
+                        className="group px-4 py-2 rounded-full bg-white border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all hover:scale-105 shadow-sm"
+                      >
+                        <span className="text-lg mr-1">{emotion.emoji}</span>
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                          {emotion.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Traditional Filters */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   {/* Search Input */}
                   <div className="lg:col-span-2">
