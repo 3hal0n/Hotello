@@ -41,28 +41,10 @@ export default function About() {
 
   const team = [
     {
-      name: 'Sarah Johnson',
-      role: 'CEO & Founder',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-      bio: '15+ years in hospitality industry'
-    },
-    {
-      name: 'Michael Chen',
-      role: 'CTO',
+      name: 'Shalon',
+      role: 'CEO & CTO',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-      bio: 'AI & Machine Learning expert'
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Head of Customer Success',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-      bio: 'Customer experience specialist'
-    },
-    {
-      name: 'David Kim',
-      role: 'Head of Partnerships',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-      bio: 'Global hotel network builder'
+      bio: 'Visionary leader & technology innovator driving Hotello forward'
     }
   ];
 
@@ -184,7 +166,7 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-sm mx-auto">
             {team.map((member, index) => (
               <div
                 key={index}
@@ -194,13 +176,13 @@ export default function About() {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                  <p className="text-blue-600 font-semibold mb-2">{member.role}</p>
-                  <p className="text-gray-600 text-sm">{member.bio}</p>
+                <div className="p-6 text-center">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">{member.name}</h3>
+                  <p className="text-blue-600 font-semibold mb-3 text-lg">{member.role}</p>
+                  <p className="text-gray-600">{member.bio}</p>
                 </div>
               </div>
             ))}

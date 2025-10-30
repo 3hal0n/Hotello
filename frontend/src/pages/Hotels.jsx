@@ -40,12 +40,17 @@ export default function Hotels() {
   const fetchHotels = async () => {
     try {
       setLoading(true);
-  const response = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`);
       const data = await response.json();
-      setHotels(data);
-      setFilteredHotels(data);
+      
+      // Handle API response structure (data.success and data.data)
+      const hotelsData = data.success && data.data ? data.data : (Array.isArray(data) ? data : []);
+      setHotels(hotelsData);
+      setFilteredHotels(hotelsData);
     } catch (error) {
       console.error('Error fetching hotels:', error);
+      setHotels([]);
+      setFilteredHotels([]);
     } finally {
       setLoading(false);
     }
@@ -70,9 +75,10 @@ export default function Hotels() {
     }
 
     // Price range filter
-    result = result.filter(hotel =>
-      hotel.price >= filters.priceRange[0] && hotel.price <= filters.priceRange[1]
-    );
+    result = result.filter(hotel => {
+      const price = hotel.pricePerNight || hotel.price || 0;
+      return price >= filters.priceRange[0] && price <= filters.priceRange[1];
+    });
 
     // Rating filter
     if (filters.rating > 0) {
@@ -85,17 +91,16 @@ export default function Hotels() {
         filters.amenities.every(amenity => hotel.amenities?.includes(amenity))
       );
     }
-
     // Sorting
     switch (filters.sortBy) {
       case 'price-low':
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => (a.pricePerNight || a.price || 0) - (b.pricePerNight || b.price || 0));
         break;
       case 'price-high':
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => (b.pricePerNight || b.price || 0) - (a.pricePerNight || a.price || 0));
         break;
       case 'rating':
-        result.sort((a, b) => b.rating - a.rating);
+        result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       default:
         // featured - no sorting needed
