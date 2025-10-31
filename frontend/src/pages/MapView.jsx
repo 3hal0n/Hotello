@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { MapPin, Star, DollarSign, Navigation, Loader2 } from 'lucide-react';
+import { mockHotels } from '../data/mockHotels';
 
 export default function MapView() {
   const navigate = useNavigate();
@@ -27,8 +28,9 @@ export default function MapView() {
           setHotels([]);
         }
       } catch (err) {
-        console.error(err);
-        setHotels([]);
+        console.error('Backend not available, using mock data:', err);
+        // Use mock data when backend is unavailable
+        setHotels(mockHotels);
       } finally {
         setLoading(false);
       }

@@ -8,6 +8,7 @@ import AdminLayout from './AdminLayout';
 import FeaturesSection from '../components/FeaturesSection';
 import Pagination from '../components/Pagination';
 import { Sparkles, MapPin, Filter } from 'lucide-react';
+import { mockHotels } from '../data/mockHotels';
 
 export default function Home() {
   const [allHotels, setAllHotels] = useState([]); // Store all hotels
@@ -44,8 +45,11 @@ export default function Home() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
-        setError('Failed to connect to server');
+        console.error('Backend not available, using mock data:', err);
+        // Use mock data when backend is unavailable
+        setAllHotels(mockHotels);
+        setHotels(mockHotels);
+        setError(null); // Don't show error when using mock data
         setLoading(false);
       });
   }, []);
