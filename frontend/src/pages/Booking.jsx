@@ -4,6 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 import useApi from '../hooks/useApi';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { mockHotels } from '../data/mockHotels';
 
 export default function Booking() {
   const { id } = useParams();
@@ -44,8 +45,19 @@ export default function Booking() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
-        setError('Failed to load hotel details');
+        console.error('Backend not available, using mock data:', err);
+        // Use mock data when backend is unavailable
+        const mockHotel = mockHotels.find(h => h._id === id);
+        if (mockHotel) {
+          setHotel(mockHotel);
+          // Set default room type to the first available room type
+          if (mockHotel.roomTypes && mockHotel.roomTypes.length > 0) {
+            setRoomType(mockHotel.roomTypes[0].type);
+          }
+          setError(null);
+        } else {
+          setError('Hotel not found');
+        }
         setLoading(false);
       });
   }, [id, isSignedIn, navigate]);

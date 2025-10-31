@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
 import { Search, SlidersHorizontal, MapPin, Star, DollarSign, Wifi, Utensils, Car, Dumbbell, X, ChevronDown } from 'lucide-react';
+import { mockHotels } from '../data/mockHotels';
 
 export default function Hotels() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -65,9 +66,10 @@ export default function Hotels() {
         setFilteredHotels([]);
       }
     } catch (error) {
-      console.error('Error fetching hotels:', error);
-      setHotels([]);
-      setFilteredHotels([]);
+      console.error('Backend not available, using mock data:', error);
+      // Use mock data when backend is unavailable
+      setHotels(mockHotels);
+      setFilteredHotels(mockHotels);
     } finally {
       setLoading(false);
     }

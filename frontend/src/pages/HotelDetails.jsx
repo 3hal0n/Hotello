@@ -6,6 +6,7 @@ import ImageGallery from '../components/ImageGallery';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { MapPin, Star, Calendar, Users, Shield, Award } from 'lucide-react';
+import { mockHotels } from '../data/mockHotels';
 
 export default function HotelDetails() {
   const { id } = useParams();
@@ -34,8 +35,15 @@ export default function HotelDetails() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
-        setError('Failed to load hotel details');
+        console.error('Backend not available, using mock data:', err);
+        // Use mock data when backend is unavailable
+        const mockHotel = mockHotels.find(h => h._id === id);
+        if (mockHotel) {
+          setHotel(mockHotel);
+          setError(null);
+        } else {
+          setError('Hotel not found');
+        }
         setLoading(false);
       });
   }, [id]);
