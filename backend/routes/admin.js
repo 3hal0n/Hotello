@@ -16,7 +16,8 @@ const {
 router.post('/login', login);
 
 // Protected routes (require admin authentication)
-router.get('/dashboard/stats', adminAuth, getDashboardStats);
+router.get('/stats', adminAuth, getDashboardStats); // Changed from /dashboard/stats
+router.get('/dashboard/stats', adminAuth, getDashboardStats); // Keep for backward compatibility
 router.get('/hotels', adminAuth, getAllHotels);
 router.post('/hotels', adminAuth, createHotel);
 router.put('/hotels/:id', adminAuth, updateHotel);

@@ -59,14 +59,24 @@ export default function Home() {
   useEffect(() => {
     let filtered = [...allHotels];
 
-    // Search filter
+    // Enhanced search filter with emotion keywords
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(h => 
-        h.name.toLowerCase().includes(query) || 
-        h.location.toLowerCase().includes(query) ||
-        h.description?.toLowerCase().includes(query)
-      );
+      const keywords = query.split(' ').filter(k => k.length > 2); // Split into keywords
+      
+      filtered = filtered.filter(h => {
+        const searchableText = [
+          h.name,
+          h.location,
+          h.description || '',
+          ...(h.amenities || []),
+          h.policies || ''
+        ].join(' ').toLowerCase();
+        
+        // Check if any keyword matches
+        return keywords.some(keyword => searchableText.includes(keyword)) ||
+               searchableText.includes(query);
+      });
     }
 
     // Price filter

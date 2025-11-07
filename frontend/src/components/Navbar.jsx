@@ -114,12 +114,19 @@ export default function Navbar() {
                   <UserButton afterSignOutUrl="/" />
                 </div>
               ) : (
-                <SignUpButton mode="modal">
-                  <button className="relative group px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105">
-                    <span className="relative z-10">Sign Up</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                </SignUpButton>
+                <div className="flex items-center space-x-3">
+                  <SignInButton mode="modal">
+                    <button className="px-6 py-2.5 text-sm font-medium text-gray-700 hover:text-blue-600 border border-gray-300 rounded-lg transition-all duration-300 hover:border-blue-600">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <button className="relative group px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105">
+                      <span className="relative z-10">Sign Up</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </SignUpButton>
+                </div>
               )}
             </div>
 
@@ -222,11 +229,18 @@ export default function Navbar() {
                 <UserButton afterSignOutUrl="/" />
               </div>
             ) : (
-              <SignUpButton mode="modal">
-                <button className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg transition-all duration-200">
-                  Sign Up
-                </button>
-              </SignUpButton>
+              <div className="space-y-2">
+                <SignInButton mode="modal">
+                  <button className="w-full px-4 py-3 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:border-blue-600 hover:text-blue-600 transition-all duration-200">
+                    Sign In
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg transition-all duration-200">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </div>
             )}
           </div>
         </div>

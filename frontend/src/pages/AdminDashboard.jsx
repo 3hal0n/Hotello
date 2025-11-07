@@ -29,8 +29,12 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
-      setStats(data);
-      setError('');
+      if (data.success) {
+        setStats(data.data);
+        setError('');
+      } else {
+        setError(data.message || 'Failed to load dashboard stats');
+      }
     } catch (err) {
       setError('Failed to load dashboard stats');
       console.error(err);
@@ -46,8 +50,12 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
-      setHotels(data);
-      setError('');
+      if (data.success) {
+        setHotels(data.data || []);
+        setError('');
+      } else {
+        setError(data.message || 'Failed to load hotels');
+      }
     } catch (err) {
       setError('Failed to load hotels');
       console.error(err);
@@ -63,8 +71,12 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
-      setBookings(data);
-      setError('');
+      if (data.success) {
+        setBookings(data.data || []);
+        setError('');
+      } else {
+        setError(data.message || 'Failed to load bookings');
+      }
     } catch (err) {
       setError('Failed to load bookings');
       console.error(err);
@@ -80,8 +92,12 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
-      setUsers(data);
-      setError('');
+      if (data.success) {
+        setUsers(data.data || []);
+        setError('');
+      } else {
+        setError(data.message || 'Failed to load users');
+      }
     } catch (err) {
       setError('Failed to load users');
       console.error(err);

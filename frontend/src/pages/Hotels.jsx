@@ -11,6 +11,7 @@ export default function Hotels() {
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter states
@@ -35,39 +36,58 @@ export default function Hotels() {
   }, []);
 
   useEffect(() => {
-    // Only apply filters if hotels are loaded
-    if (hotels.length > 0) {
-      applyFilters();
-    }
+    // Apply filters whenever filters change or hotels are loaded
+    applyFilters();
   }, [filters, hotels]);
 
   const fetchHotels = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`);
+      setError(null);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/api/hotels`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       
-      console.log('Hotels API Response:', data);
+      console.log('=== Hotels API Debug ===');
+      console.log('API Response:', data);
       console.log('Response type:', typeof data);
-      console.log('Is array?:', Array.isArray(data));
+      console.log('Has success property:', data.hasOwnProperty('success'));
+      console.log('Has data property:', data.hasOwnProperty('data'));
+      console.log('Is data an array?:', Array.isArray(data.data));
+      console.log('Data length:', data.data?.length || 0);
+      console.log('========================');
       
-      // Handle API response structure - same as Home page
+      // Handle API response structure
       if (data.success && data.data && Array.isArray(data.data)) {
-        console.log('Setting hotels from data.data:', data.data.length, 'hotels');
+        console.log('✅ Setting hotels from data.data:', data.data.length, 'hotels');
         setHotels(data.data);
         setFilteredHotels(data.data);
+        if (data.data.length === 0) {
+          setError('No hotels available in the database');
+        }
       } else if (Array.isArray(data)) {
-        console.log('Setting hotels from direct array:', data.length, 'hotels');
+        console.log('✅ Setting hotels from direct array:', data.length, 'hotels');
         setHotels(data);
         setFilteredHotels(data);
       } else {
-        console.log('No valid hotel data found');
+        console.error('❌ Invalid response structure:', data);
+        setError('Invalid response from server');
         setHotels([]);
         setFilteredHotels([]);
       }
     } catch (error) {
-      console.error('Backend not available, using mock data:', error);
+      console.error('❌ Hotels fetch error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+      setError(`Failed to load hotels: ${error.message}`);
       // Use mock data when backend is unavailable
+      console.log('📦 Using mock data as fallback');
       setHotels(mockHotels);
       setFilteredHotels(mockHotels);
     } finally {
@@ -77,11 +97,13 @@ export default function Hotels() {
 
   const applyFilters = () => {
     // Don't filter if hotels aren't loaded yet
-    if (hotels.length === 0) {
+    if (!hotels || hotels.length === 0) {
+      console.log('No hotels to filter');
       setFilteredHotels([]);
       return;
     }
 
+    console.log('Applying filters to', hotels.length, 'hotels');
     let result = [...hotels];
 
     // Search filter
@@ -237,6 +259,34 @@ export default function Hotels() {
             </div>
           </div>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-red-800">
+                    {error}
+                  </p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <button
+                    onClick={() => setError(null)}
+                    className="inline-flex text-red-400 hover:text-red-600 focus:outline-none"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Filters Panel */}
         {showFilters && (
