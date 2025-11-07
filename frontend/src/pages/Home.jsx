@@ -171,7 +171,6 @@ export default function Home() {
       {!isAdmin ? (
         <>
           <Navbar />
-          <div className="h-10"></div>
           <Hero onEmotionSearch={handleEmotionSearch} />
           <section id="hotels-section" className="bg-gradient-to-b from-gray-50 to-white py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">

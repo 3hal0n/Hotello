@@ -36,6 +36,7 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   const isActive = (path) => location.pathname === path;
+  const isHomePage = location.pathname === '/';
 
   const navLinks = [
     { path: '/', label: 'Home' },
@@ -49,12 +50,14 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={
-          'fixed top-0 left-0 right-0 z-50 bg-white shadow-lg transition-all duration-300'
-        }
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isHomePage && !isScrolled
+            ? 'bg-transparent border-b border-white/10'
+            : 'bg-white shadow-lg border-b border-gray-100'
+        }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-12 md:h-14">
             {/* Logo */}
             <Link
               to="/"
@@ -65,11 +68,13 @@ export default function Navbar() {
                 <img
                   src="/logo.png"
                   alt="Hotello Logo"
-                  className="relative w-10 h-10 md:w-12 md:h-12 object-contain transition-transform duration-300 group-hover:scale-110"
+                  className="relative w-9 h-9 md:w-10 md:h-10 object-contain transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
-              <span className={`text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent ${
-                isScrolled ? '' : 'text-gray-900'
+              <span className={`text-xl md:text-2xl font-bold transition-colors duration-300 ${
+                isHomePage && !isScrolled
+                  ? 'text-white'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'
               }`}>
                 Hotello
               </span>
@@ -83,10 +88,10 @@ export default function Navbar() {
                   to={link.path}
                   className={`relative text-sm font-medium transition-colors duration-200 group ${
                     isActive(link.path)
-                      ? 'text-blue-600'
-                      : isScrolled
-                      ? 'text-gray-700 hover:text-blue-600'
-                      : 'text-gray-900 hover:text-blue-600'
+                      ? isHomePage && !isScrolled ? 'text-white' : 'text-blue-600'
+                      : isHomePage && !isScrolled
+                      ? 'text-white/90 hover:text-white'
+                      : 'text-gray-700 hover:text-blue-600'
                   }`}
                 >
                   {link.label}
@@ -103,11 +108,17 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isSignedIn ? (
                 <div className="flex items-center space-x-4">
-                  <Link to="/wishlist" className="text-sm text-gray-700 hover:text-blue-600">Wishlist</Link>
-                  <Link to="/cart" className="text-sm text-gray-700 hover:text-blue-600">Cart</Link>
+                  <Link to="/wishlist" className={`text-sm transition-colors ${
+                    isHomePage && !isScrolled ? 'text-white/90 hover:text-white' : 'text-gray-700 hover:text-blue-600'
+                  }`}>Wishlist</Link>
+                  <Link to="/cart" className={`text-sm transition-colors ${
+                    isHomePage && !isScrolled ? 'text-white/90 hover:text-white' : 'text-gray-700 hover:text-blue-600'
+                  }`}>Cart</Link>
                   <Link
                     to="/profile"
-                    className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                    className={`text-sm font-medium transition-colors ${
+                      isHomePage && !isScrolled ? 'text-white/90 hover:text-white' : 'text-gray-700 hover:text-blue-600'
+                    }`}
                   >
                     My Profile
                   </Link>
@@ -116,7 +127,11 @@ export default function Navbar() {
               ) : (
                 <div className="flex items-center space-x-3">
                   <SignInButton mode="modal">
-                    <button className="px-6 py-2.5 text-sm font-medium text-gray-700 hover:text-blue-600 border border-gray-300 rounded-lg transition-all duration-300 hover:border-blue-600">
+                    <button className={`px-6 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                      isHomePage && !isScrolled
+                        ? 'text-white border border-white/30 hover:bg-white/10'
+                        : 'text-gray-700 hover:text-blue-600 border border-gray-300 hover:border-blue-600'
+                    }`}>
                       Sign In
                     </button>
                   </SignInButton>
@@ -133,22 +148,30 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+              className={`md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${
+                isHomePage && !isScrolled ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+              }`}
               aria-label="Toggle menu"
             >
               <div className="w-6 h-5 flex flex-col justify-between">
                 <span
-                  className={`block h-0.5 w-full bg-gray-900 rounded-full transition-all duration-300 ${
+                  className={`block h-0.5 w-full rounded-full transition-all duration-300 ${
+                    isHomePage && !isScrolled ? 'bg-white' : 'bg-gray-900'
+                  } ${
                     isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''
                   }`}
                 ></span>
                 <span
-                  className={`block h-0.5 w-full bg-gray-900 rounded-full transition-all duration-300 ${
+                  className={`block h-0.5 w-full rounded-full transition-all duration-300 ${
+                    isHomePage && !isScrolled ? 'bg-white' : 'bg-gray-900'
+                  } ${
                     isMobileMenuOpen ? 'opacity-0' : ''
                   }`}
                 ></span>
                 <span
-                  className={`block h-0.5 w-full bg-gray-900 rounded-full transition-all duration-300 ${
+                  className={`block h-0.5 w-full rounded-full transition-all duration-300 ${
+                    isHomePage && !isScrolled ? 'bg-white' : 'bg-gray-900'
+                  } ${
                     isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
                   }`}
                 ></span>

@@ -19,23 +19,25 @@ const Hero = ({ onEmotionSearch }) => {
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
+      {/* Background Image - Extends to top */}
+      <div className="absolute inset-0 top-0">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-top"
           style={{
             backgroundImage: `url(/bg-hero.jpg)`,
+            backgroundPosition: 'top center',
+            backgroundSize: 'cover',
           }}
         />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/40" />
+        {/* Dark Overlay - reduced opacity so sky is more visible */}
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-        {/* Large Hotello Text Overlay - Similar to StayGo */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <h1 className="hero-title-overlay">
+        {/* Large Hotello Text Overlay - Positioned to the right in sky area like StayGo */}
+        <div className="absolute top-20 right-0 left-0 flex items-start justify-end pr-8 md:pr-16 lg:pr-24 pointer-events-none">
+          <h1 className="hero-title-overlay text-right">
             Hotello
           </h1>
         </div>
