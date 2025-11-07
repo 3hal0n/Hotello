@@ -10,6 +10,8 @@ export default function MapView() {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedHotel, setSelectedHotel] = useState(null);
+  const [mapCenter, setMapCenter] = useState({ lat: 7.8731, lng: 80.7718 }); // Sri Lanka center
+  const [mapZoom, setMapZoom] = useState(8);
 
   useEffect(() => {
     async function load() {
@@ -20,17 +22,34 @@ export default function MapView() {
         
         console.log('Map API Response:', data);
         
+        let hotelsData = [];
         if (data.success && data.data) {
-          setHotels(data.data);
+          hotelsData = data.data;
         } else if (Array.isArray(data)) {
-          setHotels(data);
-        } else {
-          setHotels([]);
+          hotelsData = data;
+        }
+        
+        setHotels(hotelsData);
+        
+        // Calculate center point of all hotels if available
+        if (hotelsData.length > 0) {
+          const hotelsWithGeo = hotelsData.filter(h => h.geo?.lat && h.geo?.lng);
+          if (hotelsWithGeo.length > 0) {
+            const avgLat = hotelsWithGeo.reduce((sum, h) => sum + h.geo.lat, 0) / hotelsWithGeo.length;
+            const avgLng = hotelsWithGeo.reduce((sum, h) => sum + h.geo.lng, 0) / hotelsWithGeo.length;
+            setMapCenter({ lat: avgLat, lng: avgLng });
+          }
         }
       } catch (err) {
         console.error('Backend not available, using mock data:', err);
-        // Use mock data when backend is unavailable
         setHotels(mockHotels);
+        // Calculate center for mock data
+        const hotelsWithGeo = mockHotels.filter(h => h.geo?.lat && h.geo?.lng);
+        if (hotelsWithGeo.length > 0) {
+          const avgLat = hotelsWithGeo.reduce((sum, h) => sum + h.geo.lat, 0) / hotelsWithGeo.length;
+          const avgLng = hotelsWithGeo.reduce((sum, h) => sum + h.geo.lng, 0) / hotelsWithGeo.length;
+          setMapCenter({ lat: avgLat, lng: avgLng });
+        }
       } finally {
         setLoading(false);
       }
@@ -40,10 +59,34 @@ export default function MapView() {
 
   const handleHotelClick = (hotel) => {
     setSelectedHotel(hotel);
+    if (hotel.geo?.lat && hotel.geo?.lng) {
+      setMapCenter({ lat: hotel.geo.lat, lng: hotel.geo.lng });
+      setMapZoom(15);
+    }
+  };
+
+  const resetMapView = () => {
+    setSelectedHotel(null);
+    // Recalculate center for all hotels
+    const hotelsWithGeo = hotels.filter(h => h.geo?.lat && h.geo?.lng);
+    if (hotelsWithGeo.length > 0) {
+      const avgLat = hotelsWithGeo.reduce((sum, h) => sum + h.geo.lat, 0) / hotelsWithGeo.length;
+      const avgLng = hotelsWithGeo.reduce((sum, h) => sum + h.geo.lng, 0) / hotelsWithGeo.length;
+      setMapCenter({ lat: avgLat, lng: avgLng });
+      setMapZoom(8);
+    }
   };
 
   const navigateToHotel = (hotelId) => {
     navigate(`/hotel/${hotelId}`);
+  };
+
+  // Generate markers string for all hotels
+  const getMapMarkers = () => {
+    const hotelsWithGeo = hotels.filter(h => h.geo?.lat && h.geo?.lng);
+    if (hotelsWithGeo.length === 0) return '';
+    
+    return hotelsWithGeo.map(h => `markers=color:red%7Clabel:${h.name.charAt(0)}%7C${h.geo.lat},${h.geo.lng}`).join('&');
   };
 
   return (
@@ -135,14 +178,28 @@ export default function MapView() {
               {/* Map Display */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-24">
+                  {/* Map Controls */}
+                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex items-center justify-between">
+                    <h2 className="text-xl font-bold">
+                      {selectedHotel ? selectedHotel.name : `All Hotels (${hotels.length})`}
+                    </h2>
+                    {selectedHotel && (
+                      <button
+                        onClick={resetMapView}
+                        className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg font-semibold transition-colors text-sm"
+                      >
+                        Show All Hotels
+                      </button>
+                    )}
+                  </div>
+
                   {selectedHotel ? (
                     <div>
                       {/* Selected Hotel Details */}
-                      <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-6 text-white">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <h2 className="text-2xl font-bold mb-2">{selectedHotel.name}</h2>
-                            <p className="flex items-center gap-2 text-white/90">
+                            <p className="flex items-center gap-2 text-white/90 mb-2">
                               <MapPin className="w-5 h-5" />
                               {selectedHotel.location}
                             </p>
@@ -171,8 +228,8 @@ export default function MapView() {
                         </div>
                       </div>
 
-                      {/* Google Maps Embed */}
-                      <div className="h-[600px] bg-gray-200 relative">
+                      {/* Single Hotel Map */}
+                      <div className="h-[500px] bg-gray-200 relative">
                         {selectedHotel.geo?.lat && selectedHotel.geo?.lng ? (
                           <iframe
                             src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${selectedHotel.geo.lat},${selectedHotel.geo.lng}&zoom=15`}
@@ -218,16 +275,60 @@ export default function MapView() {
                       )}
                     </div>
                   ) : (
-                    <div className="h-[700px] flex flex-col items-center justify-center text-center p-12">
-                      <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                        <MapPin className="w-12 h-12 text-blue-600" />
+                    /* All Hotels Map View */
+                    <div>
+                      <div className="h-[700px] bg-gray-200 relative">
+                        {hotels.filter(h => h.geo?.lat && h.geo?.lng).length > 0 ? (
+                          <iframe
+                            src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${mapCenter.lat},${mapCenter.lng}&zoom=${mapZoom}&maptype=roadmap`}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen=""
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            className="w-full h-full"
+                          ></iframe>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-center p-12">
+                            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                              <MapPin className="w-12 h-12 text-blue-600" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                              No Location Data Available
+                            </h3>
+                            <p className="text-gray-600 max-w-md">
+                              Hotels don't have GPS coordinates yet. Click on any hotel to view available information.
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                        Select a Hotel to View on Map
-                      </h3>
-                      <p className="text-gray-600 max-w-md">
-                        Click on any hotel from the list on the left to see its location on the map and explore nearby areas.
-                      </p>
+                      
+                      {/* Info Box */}
+                      <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-t-4 border-blue-600">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Navigation className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">
+                              Interactive Hotel Map
+                            </h3>
+                            <p className="text-gray-700 mb-3">
+                              The map shows the general area where hotels are located across Sri Lanka. 
+                              Click on any hotel from the list to see its exact location and get detailed information.
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                                📍 {hotels.filter(h => h.geo?.lat && h.geo?.lng).length} Hotels with GPS
+                              </span>
+                              <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                                🏨 {hotels.length} Total Hotels
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
