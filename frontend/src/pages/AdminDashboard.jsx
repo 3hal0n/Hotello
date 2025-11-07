@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Hotel, Calendar, Users, LogOut, Menu, X, Search, DollarSign, TrendingUp, Plus, Edit2, Trash2, Eye, RefreshCw, BarChart3, PieChart as PieChartIcon } from 'lucide-react';
+import Toast from '../components/Toast';
+import { LayoutDashboard, Hotel, Calendar, Users, LogOut, Menu, X, Search, DollarSign, TrendingUp, Plus, Edit2, Trash2, Eye, RefreshCw, BarChart3, PieChart as PieChartIcon, CheckCircle, XCircle } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
@@ -12,6 +13,18 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (type, message, icon) => {
+    setToast({ type, message, icon });
+  };
 
   const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -117,13 +130,13 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
 
       if (res.ok) {
         setHotels(hotels.filter((h) => h._id !== hotelId));
-        alert('Hotel deleted successfully');
+        showToast('success', 'Hotel deleted successfully', <CheckCircle />);
       } else {
-        alert('Failed to delete hotel');
+        showToast('error', 'Failed to delete hotel', <XCircle />);
       }
     } catch (err) {
       console.error(err);
-      alert('Error deleting hotel');
+      showToast('error', 'Error deleting hotel', <XCircle />);
     }
   };
 
@@ -158,6 +171,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
       <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gradient-to-b from-blue-600 to-purple-700 text-white transition-all duration-300 flex flex-col`}>
         <div className="p-6 flex items-center justify-between">
           {sidebarOpen && <h1 className="text-2xl font-bold">Hotel Admin</h1>}

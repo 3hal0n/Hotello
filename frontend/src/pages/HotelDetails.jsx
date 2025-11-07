@@ -5,7 +5,8 @@ import useApi from '../hooks/useApi';
 import ImageGallery from '../components/ImageGallery';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { MapPin, Star, Calendar, Users, Shield, Award } from 'lucide-react';
+import Toast from '../components/Toast';
+import { MapPin, Star, Calendar, Users, Shield, Award, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
 export default function HotelDetails() {
@@ -17,11 +18,26 @@ export default function HotelDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Toast state
+  const [toast, setToast] = useState(null);
+  
   // Booking form state
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
   const [nights, setNights] = useState(0);
+
+  // Auto-hide toast after 3 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (type, message, icon) => {
+    setToast({ type, message, icon });
+  };
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels/${id}`)
@@ -66,15 +82,15 @@ export default function HotelDetails() {
 
   const handleBooking = () => {
     if (!isSignedIn) {
-      alert('Please sign in to book');
+      showToast('warning', 'Please sign in to book', <AlertCircle />);
       return;
     }
     if (!checkIn || !checkOut) {
-      alert('Please select check-in and check-out dates');
+      showToast('warning', 'Please select check-in and check-out dates', <AlertCircle />);
       return;
     }
     if (nights <= 0) {
-      alert('Check-out date must be after check-in date');
+      showToast('warning', 'Check-out date must be after check-in date', <AlertCircle />);
       return;
     }
     // Navigate to booking page with dates
@@ -83,7 +99,7 @@ export default function HotelDetails() {
 
   const addToWishlist = async () => {
     if (!isSignedIn) {
-      alert('Please sign in to add to wishlist');
+      showToast('warning', 'Please sign in to add to wishlist', <AlertCircle />);
       return;
     }
     try {
@@ -94,16 +110,16 @@ export default function HotelDetails() {
       }
       if (!hotels.includes(hotel._id)) hotels.push(hotel._id);
       await api.updateWishlist({ hotels });
-      alert('Added to wishlist');
+      showToast('success', 'Added to wishlist', <CheckCircle />);
     } catch (err) {
       console.error(err);
-      alert('Failed to add to wishlist');
+      showToast('error', 'Failed to add to wishlist', <XCircle />);
     }
   };
 
   const addToCart = async () => {
     if (!isSignedIn) {
-      alert('Please sign in to add to cart');
+      showToast('warning', 'Please sign in to add to cart', <AlertCircle />);
       return;
     }
     try {
@@ -123,10 +139,10 @@ export default function HotelDetails() {
       };
       items.push(item);
       await api.updateCart({ items });
-      alert('Added to cart');
+      showToast('success', 'Added to cart', <CheckCircle />);
     } catch (err) {
       console.error(err);
-      alert('Failed to add to cart');
+      showToast('error', 'Failed to add to cart', <XCircle />);
     }
   };
 
@@ -159,7 +175,8 @@ export default function HotelDetails() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-50 pt-20 pb-8">
+      {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+      <main className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <button 

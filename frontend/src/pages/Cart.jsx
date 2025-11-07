@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
+import Toast from '../components/Toast';
 import useApi from '../hooks/useApi';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Loader2, Trash2, Sparkles, CreditCard } from 'lucide-react';
+import { ShoppingCart, Loader2, Trash2, Sparkles, CreditCard, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
 export default function Cart() {
   const api = useApi();
@@ -14,6 +15,18 @@ export default function Cart() {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (type, message, icon) => {
+    setToast({ type, message, icon });
+  };
 
   useEffect(() => {
     if (!isSignedIn) return;
@@ -60,19 +73,19 @@ export default function Cart() {
       
       if (!hotelIds.includes(hotel.hotelId)) {
         await api.updateWishlist({ hotels: [...hotelIds, hotel.hotelId] });
-        alert('Added to wishlist!');
+        showToast('success', 'Added to wishlist!', <CheckCircle />);
       } else {
-        alert('Already in wishlist');
+        showToast('info', 'Already in wishlist', <AlertCircle />);
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to add to wishlist');
+      showToast('error', 'Failed to add to wishlist', <XCircle />);
     }
   }
 
   function proceedToCheckout() {
     if (!cart || !cart.items || cart.items.length === 0) {
-      alert('Your cart is empty');
+      showToast('warning', 'Your cart is empty', <AlertCircle />);
       return;
     }
     // Navigate to booking page with cart items
@@ -102,6 +115,7 @@ export default function Cart() {
   return (
     <>
       <Navbar />
+      {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
       <main className="min-h-screen bg-gray-50 pt-20 pb-12">
         {/* Header */}
         <div className="bg-gradient-to-b from-gray-900 to-black py-12">

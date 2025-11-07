@@ -4,6 +4,8 @@ import { useAuth } from '@clerk/clerk-react';
 import useApi from '../hooks/useApi';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Toast from '../components/Toast';
+import { AlertCircle } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
 export default function Booking() {
@@ -23,6 +25,18 @@ export default function Booking() {
   const [error, setError] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const [nights, setNights] = useState(0);
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (type, message, icon) => {
+    setToast({ type, message, icon });
+  };
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -86,12 +100,12 @@ export default function Booking() {
     e.preventDefault();
     
     if (!checkIn || !checkOut) {
-      alert('Please select check-in and check-out dates');
+      showToast('warning', 'Please select check-in and check-out dates', <AlertCircle />);
       return;
     }
     
     if (nights <= 0) {
-      alert('Check-out date must be after check-in date');
+      showToast('warning', 'Check-out date must be after check-in date', <AlertCircle />);
       return;
     }
 
@@ -153,6 +167,7 @@ export default function Booking() {
   return (
     <>
       <Navbar />
+      {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
       <main className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <button 

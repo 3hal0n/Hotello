@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Toast from '../components/Toast';
 import useApi from '../hooks/useApi';
 import { useAuth } from '@clerk/clerk-react';
-import { Send, Bot, User, Sparkles, MessageSquare, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 
 export default function Chat() {
   const api = useApi();
@@ -16,7 +17,19 @@ export default function Chat() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (type, message, icon) => {
+    setToast({ type, message, icon });
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,7 +42,7 @@ export default function Chat() {
   async function send(e) {
     e?.preventDefault();
     if (!isSignedIn) {
-      alert('Please sign in to use the AI chat');
+      showToast('warning', 'Please sign in to use the AI chat', <AlertCircle />);
       return;
     }
     if (!input.trim()) return;
@@ -71,7 +84,8 @@ export default function Chat() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
+      {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20 pb-8">
         {/* Header */}
         <div className="bg-gradient-to-b from-gray-900 to-black py-12">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

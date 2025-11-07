@@ -8,7 +8,7 @@ import AdminLayout from './AdminLayout';
 import FeaturesSection from '../components/FeaturesSection';
 import Pagination from '../components/Pagination';
 import { AIChatbot } from '../components/AIChatbot';
-import { Sparkles, MapPin, Filter } from 'lucide-react';
+import { Sparkles, MapPin, Filter, Star, Quote } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
 export default function Home() {
@@ -388,6 +388,219 @@ export default function Home() {
 
           {/* Features Section */}
           <FeaturesSection />
+
+          {/* Popular Cities Section */}
+          <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                  Popular Destinations
+                </h2>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  Discover amazing hotels across Sri Lanka's most beautiful cities
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { 
+                    city: 'Colombo', 
+                    hotels: 5, 
+                    image: '/assets/img/cinnamon-grand-colombo/exterior.jpg',
+                    description: 'Vibrant capital city'
+                  },
+                  { 
+                    city: 'Kandy', 
+                    hotels: 3, 
+                    image: '/assets/img/earls-regency-kandy/exterior.jpg',
+                    description: 'Cultural heart of Sri Lanka'
+                  },
+                  { 
+                    city: 'Galle', 
+                    hotels: 2, 
+                    image: '/assets/img/galle-face-hotel/exterior.jpg',
+                    description: 'Historic coastal city'
+                  },
+                  { 
+                    city: 'Nuwara Eliya', 
+                    hotels: 3, 
+                    image: '/assets/img/grand-hotel-nuwara-eliya/exterior.jpg',
+                    description: 'Little England of Sri Lanka'
+                  },
+                  { 
+                    city: 'Bentota', 
+                    hotels: 2, 
+                    image: '/assets/img/avani-bentota-resort/exterior.jpg',
+                    description: 'Beach paradise'
+                  },
+                  { 
+                    city: 'Sigiriya', 
+                    hotels: 2, 
+                    image: '/assets/img/water-garden-sigiriya/exterior.jpg',
+                    description: 'Ancient rock fortress'
+                  },
+                  { 
+                    city: 'Dambulla', 
+                    hotels: 1, 
+                    image: '/assets/img/amaya-lake-dambulla/exterior.jpg',
+                    description: 'Cave temples & nature'
+                  },
+                  { 
+                    city: 'Tangalle', 
+                    hotels: 2, 
+                    image: '/assets/img/anantara-peace-haven-tangalle/exterior.jpg',
+                    description: 'Serene beach retreat'
+                  },
+                ].map((destination, index) => (
+                  <div
+                    key={index}
+                    className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+                  >
+                    {/* Image */}
+                    <div className="relative h-64 overflow-hidden">
+                      <img
+                        src={destination.image}
+                        alt={destination.city}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    </div>
+
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-2xl font-bold mb-1 group-hover:text-blue-300 transition-colors">
+                        {destination.city}
+                      </h3>
+                      <p className="text-sm text-gray-300 mb-2">{destination.description}</p>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm font-semibold text-blue-300">
+                          {destination.hotels} Hotels Available
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Hover Effect */}
+                    <div className="absolute inset-0 border-4 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Customer Reviews Section */}
+          <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                  What Our Guests Say
+                </h2>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  Real experiences from real travelers who found their perfect stay with Hotello
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                  {
+                    name: 'Sarah Johnson',
+                    location: 'New York, USA',
+                    image: 'https://randomuser.me/api/portraits/women/32.jpg',
+                    rating: 5,
+                    review: 'The AI emotion search helped me find the perfect romantic getaway in Kandy. The hotel exceeded all our expectations!',
+                    hotel: 'Earls Regency, Kandy',
+                    date: 'October 2024'
+                  },
+                  {
+                    name: 'Michael Chen',
+                    location: 'Singapore',
+                    image: 'https://randomuser.me/api/portraits/men/45.jpg',
+                    rating: 5,
+                    review: 'Booking was seamless, and the AI chatbot answered all my questions instantly. Found an amazing beach resort in Bentota!',
+                    hotel: 'Avani Bentota Resort',
+                    date: 'September 2024'
+                  },
+                  {
+                    name: 'Emma Williams',
+                    location: 'London, UK',
+                    image: 'https://randomuser.me/api/portraits/women/68.jpg',
+                    rating: 5,
+                    review: 'The family-friendly search was a game-changer! We found the perfect hotel with activities for our kids in Colombo.',
+                    hotel: 'Cinnamon Grand Colombo',
+                    date: 'November 2024'
+                  },
+                ].map((review, index) => (
+                  <div
+                    key={index}
+                    className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:-translate-y-2"
+                  >
+                    {/* Quote Icon */}
+                    <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-6 relative">
+                      <Quote className="w-10 h-10 text-white/30 absolute top-4 right-4" />
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={review.image}
+                          alt={review.name}
+                          className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
+                        />
+                        <div className="text-white">
+                          <h4 className="font-bold text-lg">{review.name}</h4>
+                          <p className="text-sm text-blue-100">{review.location}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review Content */}
+                    <div className="p-6">
+                      {/* Star Rating */}
+                      <div className="flex gap-1 mb-4">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+
+                      {/* Review Text */}
+                      <p className="text-gray-700 leading-relaxed mb-4 italic">
+                        "{review.review}"
+                      </p>
+
+                      {/* Hotel Info */}
+                      <div className="pt-4 border-t border-gray-100">
+                        <p className="text-sm font-semibold text-gray-900">{review.hotel}</p>
+                        <p className="text-xs text-gray-500 mt-1">{review.date}</p>
+                      </div>
+                    </div>
+
+                    {/* Bottom Accent */}
+                    <div className="h-1 w-0 group-hover:w-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div className="p-6 bg-white rounded-xl shadow-md">
+                  <div className="text-4xl font-bold text-blue-600 mb-2">4.9/5</div>
+                  <div className="text-sm text-gray-600">Average Rating</div>
+                </div>
+                <div className="p-6 bg-white rounded-xl shadow-md">
+                  <div className="text-4xl font-bold text-blue-600 mb-2">5,000+</div>
+                  <div className="text-sm text-gray-600">Happy Guests</div>
+                </div>
+                <div className="p-6 bg-white rounded-xl shadow-md">
+                  <div className="text-4xl font-bold text-blue-600 mb-2">20+</div>
+                  <div className="text-sm text-gray-600">Premium Hotels</div>
+                </div>
+                <div className="p-6 bg-white rounded-xl shadow-md">
+                  <div className="text-4xl font-bold text-blue-600 mb-2">24/7</div>
+                  <div className="text-sm text-gray-600">AI Support</div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Admin Login Button at bottom */}
           <div className="flex justify-center my-10">

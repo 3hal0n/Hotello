@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
+import Toast from '../components/Toast';
 import useApi from '../hooks/useApi';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Loader2, ShoppingCart, Sparkles } from 'lucide-react';
+import { Heart, Loader2, ShoppingCart, Sparkles, CheckCircle, XCircle } from 'lucide-react';
 
 export default function Wishlist() {
   const api = useApi();
@@ -14,6 +15,18 @@ export default function Wishlist() {
   const [wishlist, setWishlist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (type, message, icon) => {
+    setToast({ type, message, icon });
+  };
 
   useEffect(() => {
     if (!isSignedIn) return;
@@ -63,10 +76,10 @@ export default function Wishlist() {
         roomType: 'Standard Room',
         guests: 2
       });
-      alert('Added to cart!');
+      showToast('success', 'Added to cart!', <CheckCircle />);
     } catch (err) {
       console.error(err);
-      alert('Failed to add to cart');
+      showToast('error', 'Failed to add to cart', <XCircle />);
     }
   }
 
@@ -92,6 +105,7 @@ export default function Wishlist() {
   return (
     <>
       <Navbar />
+      {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
       <main className="min-h-screen bg-gray-50 pt-20 pb-12">
         {/* Header */}
         <div className="bg-gradient-to-b from-gray-900 to-black py-12">

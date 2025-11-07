@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
 import Pagination from '../components/Pagination';
-import { Search, SlidersHorizontal, MapPin, Star, DollarSign, Wifi, Utensils, Car, Dumbbell, X, ChevronDown } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Star, DollarSign, Wifi, Utensils, Car, Dumbbell, X, ChevronDown, Sparkles } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
 export default function Hotels() {
@@ -110,12 +110,24 @@ export default function Hotels() {
     console.log('Applying filters to', hotels.length, 'hotels');
     let result = [...hotels];
 
-    // Search filter
+    // Enhanced search filter with emotion keywords (like Home page)
     if (filters.search) {
-      result = result.filter(hotel =>
-        hotel.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        hotel.description?.toLowerCase().includes(filters.search.toLowerCase())
-      );
+      const query = filters.search.toLowerCase();
+      const keywords = query.split(' ').filter(k => k.length > 2); // Split into keywords
+      
+      result = result.filter(hotel => {
+        const searchableText = [
+          hotel.name,
+          hotel.location,
+          hotel.description || '',
+          ...(hotel.amenities || []),
+          hotel.policies || ''
+        ].join(' ').toLowerCase();
+        
+        // Check if any keyword matches
+        return keywords.some(keyword => searchableText.includes(keyword)) ||
+               searchableText.includes(query);
+      });
     }
 
     // Location filter
@@ -229,9 +241,40 @@ export default function Hotels() {
           </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar & Filters */}
         <div className="bg-white shadow-md sticky top-20 z-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            {/* AI Emotion Quick Search */}
+            <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <h4 className="text-sm font-semibold text-gray-900">AI Emotion-Driven Search</h4>
+              </div>
+              <p className="text-xs text-gray-600 mb-3">Find hotels that match your mood and preferences</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { emoji: "😌", label: "Relaxing", query: "peaceful relaxing spa wellness quiet serene" },
+                  { emoji: "🎉", label: "Exciting", query: "vibrant nightlife entertainment activities adventure" },
+                  { emoji: "💑", label: "Romantic", query: "romantic couples intimate cozy candlelit" },
+                  { emoji: "👨‍👩‍👧‍👦", label: "Family", query: "family kids children playground activities pool" },
+                  { emoji: "💼", label: "Business", query: "business conference meeting workspace professional" },
+                  { emoji: "🏖️", label: "Beach", query: "beach ocean seaside coastal beachfront" },
+                ].map((emotion) => (
+                  <button
+                    key={emotion.label}
+                    onClick={() => setFilters({ ...filters, search: emotion.query })}
+                    className="group px-4 py-2 rounded-full bg-white border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all hover:scale-105 shadow-sm"
+                  >
+                    <span className="text-lg mr-1">{emotion.emoji}</span>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">
+                      {emotion.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Search & Sort Bar */}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -239,9 +282,17 @@ export default function Hotels() {
                   type="text"
                   value={filters.search}
                   onChange={handleSearchChange}
-                  placeholder="Search hotels..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Search hotels, locations, or describe your mood..."
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {filters.search && (
+                  <button
+                    onClick={() => setFilters({ ...filters, search: '' })}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
               </div>
 
               <div className="flex gap-2">
@@ -270,6 +321,51 @@ export default function Hotels() {
                 </select>
               </div>
             </div>
+
+            {/* Active Filters Summary */}
+            {(filters.search || filters.location || filters.rating > 0 || filters.amenities.length > 0) && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-gray-600">Active filters:</span>
+                {filters.search && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                    Search: {filters.search.substring(0, 30)}{filters.search.length > 30 ? '...' : ''}
+                    <button onClick={() => setFilters({ ...filters, search: '' })} className="hover:text-blue-900">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {filters.location && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                    Location: {filters.location}
+                    <button onClick={() => setFilters({ ...filters, location: '' })} className="hover:text-green-900">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {filters.rating > 0 && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">
+                    Rating: {filters.rating}+ stars
+                    <button onClick={() => setFilters({ ...filters, rating: 0 })} className="hover:text-yellow-900">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {filters.amenities.length > 0 && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                    Amenities: {filters.amenities.length}
+                    <button onClick={() => setFilters({ ...filters, amenities: [] })} className="hover:text-purple-900">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
