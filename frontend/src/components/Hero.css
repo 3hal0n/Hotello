@@ -2,17 +2,22 @@
 
 /* Large Hotello Text Overlay - Similar to StayGo */
 .hero-title-overlay {
+  /* Large watermark text with top-visible and lower fade to transparent */
   font-size: clamp(6rem, 18vw, 18rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 0.85;
-  color: rgba(255, 255, 255, 0.06);
   text-transform: none;
   user-select: none;
   pointer-events: none;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   margin-top: -1.5rem;
   transform: translateY(-10%);
+  /* Use a vertical gradient clipped to the text so the bottom fades to transparent */
+  background: linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Gradient Overlay */

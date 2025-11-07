@@ -52,11 +52,11 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isHomePage && !isScrolled
-            ? 'bg-transparent border-b border-white/10'
-            : 'bg-white shadow-lg border-b border-gray-100'
+            ? 'bg-transparent'
+            : 'bg-white shadow-lg'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isHomePage && !isScrolled ? 'border-b-2 border-white/30' : 'border-b border-gray-100'}`}>
           <div className="flex items-center justify-between h-12 md:h-14">
             {/* Logo */}
             <Link

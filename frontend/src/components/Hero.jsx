@@ -33,8 +33,8 @@ const Hero = ({ onEmotionSearch }) => {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
+      {/* Content: align left-bottom so headline + CTAs appear in left bottom of hero */}
+      <div className="relative z-10 flex h-full flex-col items-start justify-end px-4 text-left">
         {/* Large Hotello Text Overlay - Positioned to the right in sky area like StayGo */}
         <div className="absolute top-20 right-0 left-0 flex items-start justify-end pr-8 md:pr-16 lg:pr-24 pointer-events-none">
           <h1 className="hero-title-overlay text-right">
@@ -42,19 +42,19 @@ const Hero = ({ onEmotionSearch }) => {
           </h1>
         </div>
 
-        {/* Main Content */}
-        <div className="relative z-20 mt-auto mb-32">
+        {/* Main Content (left-bottom) */}
+        <div className="relative z-20 mb-12 w-full max-w-3xl pl-4 md:pl-8 lg:pl-16">
           {/* Headline */}
-          <h2 className="mb-6 text-5xl font-normal leading-tight text-white md:text-6xl lg:text-7xl animate-fade-in">
+          <h2 className="mb-6 text-4xl font-normal leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in">
             Find Your Perfect Stay<br />at the Best Price
           </h2>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col gap-4 sm:flex-row justify-center animate-fade-in-delay">
+          {/* CTA Buttons - left aligned and placed near bottom-left */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start animate-fade-in-delay">
             <Button
               size="lg"
               onClick={scrollToHotels}
-              className="group rounded-full bg-gradient-gold px-8 py-6 text-base font-semibold text-gray-900 shadow-2xl transition-all hover:scale-105 hover:shadow-xl border-0"
+              className="group rounded-full bg-gradient-gold px-6 py-3 text-base font-semibold text-gray-900 shadow-2xl transition-all hover:scale-105 hover:shadow-xl border-0"
             >
               <Map className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
               Explore Destinations
@@ -63,7 +63,7 @@ const Hero = ({ onEmotionSearch }) => {
               size="lg"
               variant="ghost"
               onClick={() => window.location.href = '/chat'}
-              className="rounded-full border-2 border-white/30 bg-white/10 px-8 py-6 text-base font-semibold text-white backdrop-blur-lg transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20"
+              className="rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-lg transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20"
             >
               <MessageSquare className="mr-2 h-5 w-5" />
               Ask Hotello AI
