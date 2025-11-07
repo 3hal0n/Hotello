@@ -6,8 +6,9 @@ const openai = new OpenAI({
 
 // Proxy user message to OpenAI API
 async function chatWithAI(req, res) {
+  const userId = req.auth?.userId;
+  
   try {
-    const userId = req.auth?.userId;
     const { message } = req.body;
     
     if (!message) {
@@ -45,7 +46,7 @@ async function chatWithAI(req, res) {
       message: error.message,
       type: error.type,
       code: error.code,
-      userId,
+      userId: userId,
       hasApiKey: !!process.env.OPENAI_API_KEY,
     });
     

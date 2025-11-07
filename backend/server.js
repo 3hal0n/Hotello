@@ -35,6 +35,21 @@ app.use('/api/recommendations', recommendationsRoutes);
 const imageProxy = require('./routes/imageProxy');
 app.use('/api/proxy-image', imageProxy);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    success: false, 
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
+
 // Only connect to MongoDB and start the server when run directly
 if (require.main === module) {
   mongoose.connect(MONGO_URI)

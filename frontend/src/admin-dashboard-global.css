@@ -1,6 +1,0 @@
-// Import all provided admin dashboard CSS files for global use
-import 'f:/Hotello/adminDashboardUI/build/assets/css/soft-ui-dashboard-tailwind.css';
-import 'f:/Hotello/adminDashboardUI/build/assets/css/nucleo-icons.css';
-import 'f:/Hotello/adminDashboardUI/build/assets/css/nucleo-svg.css';
-
-// You may need to adjust the path if using Vite or Webpack. For Vite, place these CSS files in frontend/public or src/assets and import accordingly.
