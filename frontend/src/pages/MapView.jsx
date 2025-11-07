@@ -81,12 +81,23 @@ export default function MapView() {
     navigate(`/hotel/${hotelId}`);
   };
 
-  // Generate markers string for all hotels
-  const getMapMarkers = () => {
-    const hotelsWithGeo = hotels.filter(h => h.geo?.lat && h.geo?.lng);
-    if (hotelsWithGeo.length === 0) return '';
+  // Convert lat/lng to pixel position for overlay
+  const getMarkerPosition = (hotel) => {
+    if (!hotel.geo?.lat || !hotel.geo?.lng) return null;
     
-    return hotelsWithGeo.map(h => `markers=color:red%7Clabel:${h.name.charAt(0)}%7C${h.geo.lat},${h.geo.lng}`).join('&');
+    // Map bounds for Sri Lanka (approximate)
+    const bounds = {
+      north: 10.0,
+      south: 5.9,
+      east: 82.0,
+      west: 79.5
+    };
+    
+    // Calculate percentage position
+    const x = ((hotel.geo.lng - bounds.west) / (bounds.east - bounds.west)) * 100;
+    const y = ((bounds.north - hotel.geo.lat) / (bounds.north - bounds.south)) * 100;
+    
+    return { x: `${x}%`, y: `${y}%` };
   };
 
   return (
@@ -277,18 +288,79 @@ export default function MapView() {
                   ) : (
                     /* All Hotels Map View */
                     <div>
-                      <div className="h-[700px] bg-gray-200 relative">
+                      <div className="h-[700px] bg-gray-200 relative overflow-hidden">
                         {hotels.filter(h => h.geo?.lat && h.geo?.lng).length > 0 ? (
-                          <iframe
-                            src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${mapCenter.lat},${mapCenter.lng}&zoom=${mapZoom}&maptype=roadmap`}
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            className="w-full h-full"
-                          ></iframe>
+                          <div className="relative w-full h-full">
+                            {/* Google Maps Static API with all markers */}
+                            <img
+                              src={`https://maps.googleapis.com/maps/api/staticmap?center=${mapCenter.lat},${mapCenter.lng}&zoom=${mapZoom}&size=800x700&maptype=roadmap&${hotels.filter(h => h.geo?.lat && h.geo?.lng).map((h, i) => `markers=color:blue%7Clabel:${i + 1}%7C${h.geo.lat},${h.geo.lng}`).join('&')}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`}
+                              alt="Hotels Map"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback to iframe if static map fails
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'block';
+                              }}
+                            />
+                            
+                            {/* Fallback iframe (hidden by default) */}
+                            <div style={{ display: 'none' }} className="w-full h-full">
+                              <iframe
+                                src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${mapCenter.lat},${mapCenter.lng}&zoom=${mapZoom}&maptype=roadmap`}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                className="w-full h-full"
+                              ></iframe>
+                            </div>
+                            
+                            {/* Clickable overlay for hotel markers */}
+                            <div className="absolute inset-0 pointer-events-none">
+                              {hotels.filter(h => h.geo?.lat && h.geo?.lng).map((hotel, index) => {
+                                const pos = getMarkerPosition(hotel);
+                                if (!pos) return null;
+                                
+                                return (
+                                  <div
+                                    key={hotel._id}
+                                    className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group"
+                                    style={{ left: pos.x, top: pos.y }}
+                                    onClick={() => handleHotelClick(hotel)}
+                                  >
+                                    {/* Clickable area - larger than visible pin */}
+                                    <div className="relative p-4">
+                                      {/* Pin with number */}
+                                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                        <div className="relative">
+                                          <div className="absolute -inset-3 bg-blue-600 rounded-full opacity-0 group-hover:opacity-20 blur-md transition-opacity"></div>
+                                          <div className="relative w-10 h-10 bg-blue-600 rounded-full border-3 border-white shadow-lg flex items-center justify-center group-hover:bg-blue-700 group-hover:scale-125 transition-all duration-200 z-10">
+                                            <span className="text-white font-bold text-sm">{index + 1}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Hotel Name Tooltip */}
+                                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                                        <div className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-2xl">
+                                          <div className="font-semibold">{hotel.name}</div>
+                                          <div className="text-gray-300 text-xs mt-1">
+                                            LKR {(hotel.pricePerNight || 0).toLocaleString()}/night • ⭐ {hotel.rating || 'N/A'}
+                                          </div>
+                                          {/* Arrow */}
+                                          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                                            <div className="w-3 h-3 bg-gray-900 transform rotate-45"></div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         ) : (
                           <div className="flex flex-col items-center justify-center h-full text-center p-12">
                             <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6">
@@ -315,8 +387,8 @@ export default function MapView() {
                               Interactive Hotel Map
                             </h3>
                             <p className="text-gray-700 mb-3">
-                              The map shows the general area where hotels are located across Sri Lanka. 
-                              Click on any hotel from the list to see its exact location and get detailed information.
+                              All hotels are shown on the map with numbered markers. 
+                              Hover over markers to see hotel details, or click to zoom in for more information.
                             </p>
                             <div className="flex flex-wrap gap-2">
                               <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
@@ -324,6 +396,9 @@ export default function MapView() {
                               </span>
                               <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
                                 🏨 {hotels.length} Total Hotels
+                              </span>
+                              <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-medium shadow-sm">
+                                🔵 Click numbered pins for details
                               </span>
                             </div>
                           </div>
