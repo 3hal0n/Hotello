@@ -10,6 +10,10 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/hotello';
 app.use(cors());
 app.use(express.json());
 
+// Admin routes
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
+
 const protectedRoutes = require('./routes/protected');
 app.use('/api', protectedRoutes);
 const hotelsRoutes = require('./routes/hotels');

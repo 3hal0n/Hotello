@@ -1,9 +1,136 @@
-import React from 'react';
-import '../admin-dashboard-global.css';
+import React, { useState, useEffect } from 'react';
+import { 
+  LayoutDashboard, Hotel, Calendar, Users, LogOut, Menu, X,
+  DollarSign, ShoppingCart, Star, Trash2
+} from 'lucide-react';
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [hotels, setHotels] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      fetchDashboardStats();
+    } else if (activeTab === 'hotels') {
+      fetchHotels();
+    } else if (activeTab === 'bookings') {
+      fetchBookings();
+    } else if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  const authHeaders = () => ({
+    'Authorization': `Bearer ${adminToken}`,
+    'Content-Type': 'application/json'
+  });
+
+  async function fetchDashboardStats() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/admin/dashboard/stats`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStats(data.data);
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+      setError('Failed to load dashboard stats');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchHotels() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/admin/hotels`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        setHotels(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching hotels:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchBookings() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/admin/bookings`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBookings(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchUsers() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/admin/users`, {
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUsers(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteHotel(id) {
+    if (!confirm('Are you sure you want to delete this hotel?')) return;
+    
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE || ''}/api/admin/hotels/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchHotels();
+      } else {
+        alert('Failed to delete hotel');
+      }
+    } catch (err) {
+      console.error('Error deleting hotel:', err);
+      alert('Error deleting hotel');
+    }
+  }
+
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'hotels', label: 'Hotels', icon: Hotel },
+    { id: 'bookings', label: 'Bookings', icon: Calendar },
+    { id: 'users', label: 'Users', icon: Users },
+  ];
+
   return (
-    <div className="bg-gray-50 min-h-screen text-slate-500">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
         <div className="h-19.5">

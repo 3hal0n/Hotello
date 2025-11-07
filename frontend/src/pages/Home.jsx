@@ -104,13 +104,19 @@ export default function Home() {
   const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
   const totalPages = Math.ceil(hotels.length / hotelsPerPage);
 
-  async function handleAdminLogin() {
+  async function handleAdminLogin(token, admin) {
     setIsAdmin(true);
     setShowAdminLogin(false);
     if (!AdminDashboardComp) {
       const mod = await import('./AdminDashboard.jsx');
       setAdminDashboardComp(() => mod.default);
     }
+  }
+
+  function handleAdminLogout() {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    setIsAdmin(false);
   }
 
   async function openAdminLogin() {
@@ -398,7 +404,15 @@ export default function Home() {
           <Footer />
         </>
       ) : (
-        <AdminLayout />
+        <React.Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div></div>}>
+          {AdminDashboardComp ? (
+            <AdminDashboardComp 
+              adminToken={localStorage.getItem('adminToken')} 
+              adminUser={JSON.parse(localStorage.getItem('adminUser') || '{}')}
+              onLogout={handleAdminLogout}
+            />
+          ) : null}
+        </React.Suspense>
       )}
     </div>
   );
