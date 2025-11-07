@@ -7,6 +7,7 @@ import HotelMap from '../components/HotelMap';
 import AdminLayout from './AdminLayout';
 import FeaturesSection from '../components/FeaturesSection';
 import Pagination from '../components/Pagination';
+import { AIChatbot } from '../components/AIChatbot';
 import { Sparkles, MapPin, Filter } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
@@ -401,6 +402,10 @@ export default function Home() {
               </div>
             </div>
           )}
+          
+          {/* AI Chatbot */}
+          <AIChatbot />
+          
           <Footer />
         </>
       ) : (
