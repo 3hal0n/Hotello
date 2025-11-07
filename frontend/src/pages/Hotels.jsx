@@ -99,7 +99,6 @@ export default function Hotels() {
     // Don't filter if hotels aren't loaded yet
     if (!hotels || hotels.length === 0) {
       console.log('No hotels to filter');
-      setFilteredHotels([]);
       return;
     }
 
@@ -154,6 +153,7 @@ export default function Hotels() {
         break;
     }
 
+    console.log('Filtered result:', result.length, 'hotels');
     setFilteredHotels(result);
   };
 
