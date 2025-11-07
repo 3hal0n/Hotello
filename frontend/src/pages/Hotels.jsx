@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
+import Pagination from '../components/Pagination';
 import { Search, SlidersHorizontal, MapPin, Star, DollarSign, Wifi, Utensils, Car, Dumbbell, X, ChevronDown } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
@@ -13,12 +14,16 @@ export default function Hotels() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const hotelsPerPage = 9; // 3x3 grid like Home page
 
   // Filter states
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     location: searchParams.get('location') || '',
-    priceRange: [0, 1000],
+    priceRange: [0, 100000], // Increased max to 100,000 LKR
     rating: 0,
     amenities: [],
     sortBy: 'featured'
@@ -155,6 +160,7 @@ export default function Hotels() {
 
     console.log('Filtered result:', result.length, 'hotels');
     setFilteredHotels(result);
+    setCurrentPage(1); // Reset to page 1 when filters change
   };
 
   const handleSearchChange = (e) => {
@@ -186,19 +192,26 @@ export default function Hotels() {
     setFilters({
       search: '',
       location: '',
-      priceRange: [0, 1000],
+      priceRange: [0, 100000],
       rating: 0,
       amenities: [],
       sortBy: 'featured'
     });
     setSearchParams({});
+    setCurrentPage(1); // Reset to page 1
   };
 
   const activeFiltersCount = 
     (filters.location ? 1 : 0) +
     (filters.rating > 0 ? 1 : 0) +
     filters.amenities.length +
-    (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000 ? 1 : 0);
+    (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000 ? 1 : 0);
+
+  // Pagination calculations
+  const indexOfLastHotel = currentPage * hotelsPerPage;
+  const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
+  const currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
+  const totalPages = Math.ceil(filteredHotels.length / hotelsPerPage);
 
   return (
     <>
@@ -207,10 +220,10 @@ export default function Hotels() {
         {/* Header Section */}
   <div className="bg-gradient-to-b from-gray-900 to-black py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
               Discover Your Perfect Stay
             </h1>
-            <p className="text-xl text-white/90">
+            <p className="text-xl text-white/90 text-center">
               {filteredHotels.length} hotels available
             </p>
           </div>
@@ -341,7 +354,7 @@ export default function Hotels() {
                       onChange={(e) => handlePriceRangeChange(e, 1)}
                       className="w-20 px-2 py-2 border border-gray-300 rounded-lg text-sm"
                       min={filters.priceRange[0]}
-                      max="1000"
+                      max="100000"
                     />
                   </div>
                 </div>
@@ -400,7 +413,16 @@ export default function Hotels() {
         )}
 
     {/* Hotels Grid */}
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-4">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-12">
+          {/* Results Summary */}
+          {!loading && filteredHotels.length > 0 && (
+            <div className="mb-6 text-center">
+              <p className="text-gray-600">
+                Showing {currentHotels.length > 0 ? indexOfFirstHotel + 1 : 0} - {Math.min(indexOfLastHotel, filteredHotels.length)} of {filteredHotels.length} hotels
+              </p>
+            </div>
+          )}
+
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
@@ -418,11 +440,22 @@ export default function Hotels() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-2">
-              {filteredHotels.map((hotel) => (
-                <HotelCard key={hotel._id} hotel={hotel} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {currentHotels.map((hotel) => (
+                  <HotelCard key={hotel._id} hotel={hotel} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
