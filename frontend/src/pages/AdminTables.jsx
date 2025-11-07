@@ -1,5 +1,4 @@
 import React from 'react';
-import '../admin-dashboard-global.css';
 
 export default function AdminTables() {
   return (

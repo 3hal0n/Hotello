@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "seed": "node scripts/seedHotels.js",
+    "seed:admin": "node scripts/seedAdmin.js",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -16,11 +17,14 @@
   "type": "commonjs",
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
+    "@google/generative-ai": "^0.24.1",
     "@use-gesture/react": "^10.3.1",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.2",
     "openai": "^6.7.0",
     "stripe": "^19.1.0"
