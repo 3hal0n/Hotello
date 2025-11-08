@@ -1,5 +1,11 @@
 # Hotello - Quick Start Guide
 
+## 🚀 Deployment Status (Updated Nov 8, 2025)
+
+- Frontend: https://hotello-ebon.vercel.app (Vercel)
+- Backend:  https://hotello-oq0q.onrender.com (Render)
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
