@@ -1,5 +1,25 @@
 /* Hero Component Custom Styles */
 
+/* Large Hotello Text Overlay - Similar to StayGo */
+.hero-title-overlay {
+  /* Large watermark text with top-visible and lower fade to transparent */
+  font-size: clamp(6rem, 18vw, 18rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.85;
+  text-transform: none;
+  user-select: none;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin-top: -1.5rem;
+  transform: translateY(-10%);
+  /* Use a vertical gradient clipped to the text so the bottom fades to transparent */
+  background: linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
 /* Gradient Overlay */
 .bg-gradient-overlay {
   background: linear-gradient(
@@ -40,28 +60,14 @@
 
 /* Gradient Gold Button */
 .bg-gradient-gold {
-  background: linear-gradient(135deg, #d4af37 0%, #f2d06b 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
 }
 
 .bg-gradient-gold:hover {
-  background: linear-gradient(135deg, #f2d06b 0%, #d4af37 100%);
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
 }
 
 /* Animations */
-
-.hero {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') center center/cover no-repeat;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  z-index: 1;
-  padding-top: 80px; /* Height of navbar */
-}
 
 @keyframes fade-in {
   0% {
@@ -85,60 +91,6 @@
   }
 }
 
-@keyframes fade-in-delay-2 {
-  0%, 40% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-}
-
-@keyframes fade-in-delay-3 {
-  0%, 60% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-}
-
-@keyframes fade-in-delay-4 {
-  0%, 80% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-}
-
-@keyframes bounce-slow {
-  0%, 100% {
-    transform: translateY(0) translateX(-50%);
-  }
-  50% {
-    transform: translateY(-10px) translateX(-50%);
-  }
-}
-
-@keyframes dome-rotate {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 .animate-fade-in {
   animation: fade-in 1s ease-out forwards;
 }
@@ -147,80 +99,15 @@
   animation: fade-in-delay 1.2s ease-out forwards;
 }
 
-.animate-fade-in-delay-2 {
-  animation: fade-in-delay-2 1.4s ease-out forwards;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-title-overlay {
+    font-size: clamp(6rem, 20vw, 12rem);
+  }
 }
 
-.animate-fade-in-delay-3 {
-  animation: fade-in-delay-3 1.6s ease-out forwards;
-}
-
-.animate-fade-in-delay-4 {
-  animation: fade-in-delay-4 1.8s ease-out forwards;
-}
-
-.animate-bounce-slow {
-  animation: bounce-slow 2s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-dome-rotate {
-  animation: dome-rotate 30s ease-in-out infinite;
-}
-
-/* Primary Foreground Color (White text on dark overlay) */
-.text-primary-foreground {
-  color: #ffffff;
-}
-
-.text-primary-foreground\/80 {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.text-primary-foreground\/70 {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.text-primary-foreground\/50 {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.text-primary-foreground\/30 {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.bg-primary-foreground\/10 {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.bg-primary-foreground\/20 {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.bg-primary-foreground\/30 {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.border-primary-foreground\/20 {
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.hover\:text-primary-foreground:hover {
-  color: #ffffff;
-}
-
-.hover\:bg-primary-foreground\/20:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.hover\:bg-primary-foreground\/50:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-/* Ensure text color for input placeholder */
-.placeholder\:text-primary-foreground\/50::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+@media (max-width: 480px) {
+  .hero-title-overlay {
+    font-size: clamp(4rem, 18vw, 8rem);
+  }
 }

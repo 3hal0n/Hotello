@@ -80,6 +80,16 @@ export default function useApi() {
     return res.json();
   }, [base]);
 
+  // Add to cart
+  const addToCart = useCallback(async (data) => {
+    const res = await fetch(`${base}/api/cart/add`, {
+      method: 'POST',
+      headers: await authHeaders(),
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  }, [base]);
+
   // Stripe payment
   const createPaymentSession = useCallback(async (data) => {
     const res = await fetch(`${base}/api/payments/session`, {
@@ -116,15 +126,15 @@ export default function useApi() {
     fetchHotelById,
     createBooking,
     fetchBookings,
+    fetchBookingById,
     fetchCart,
     updateCart,
+    addToCart,
     fetchWishlist,
     updateWishlist,
     createPaymentSession,
     sendChatMessage,
     fetchRecommendations
-    ,
-    fetchBookingById
   };
 }
 

@@ -67,7 +67,7 @@
   font-size: 1.5rem;
   display: flex;
   align-items: center;
-  justify-center;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.2);
   width: 36px;
   height: 36px;

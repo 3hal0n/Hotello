@@ -1,71 +1,11 @@
-import { useState, useEffect } from "react";
-import { Sparkles, Map, ChevronDown, Star } from "lucide-react";
+import React, { useEffect, useRef } from 'react';
+import { Map, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import hotel1 from "@/assets/hotel-1.jpg";
-import hotel2 from "@/assets/hotel-2.jpg";
-import hotel3 from "@/assets/hotel-3.jpg";
-import hotel4 from "@/assets/hotel-4.jpg";
+import { motion } from 'framer-motion';
+import { gsap } from 'gsap';
 import "./Hero.css";
 
-const slides = [
-  {
-    image: hotel1,
-    mood: "romantic",
-    title: "Find Hotels That Match Your Mood",
-    subtitle: "Experience luxury tailored to your emotions",
-  },
-  {
-    image: hotel2,
-    mood: "adventure",
-    title: "Book Luxury. Feel Inspired.",
-    subtitle: "Where comfort meets elegance",
-  },
-  {
-    image: hotel3,
-    mood: "peaceful",
-    title: "Discover the Perfect Stay — Powered by AI",
-    subtitle: "Your dream destination awaits",
-  },
-  {
-    image: hotel4,
-    mood: "urban",
-    title: "Escape to Extraordinary",
-    subtitle: "Redefine your travel experience",
-  },
-];
-
-const moods = [
-  { id: "romantic", label: "Romantic", icon: "💕", query: "romantic couples intimate cozy candlelit" },
-  { id: "adventure", label: "Adventure", icon: "🏔️", query: "adventure activities exciting outdoor thrilling" },
-  { id: "peaceful", label: "Peaceful", icon: "🧘", query: "peaceful relaxing spa wellness quiet serene" },
-  { id: "urban", label: "Urban Chic", icon: "🌆", query: "urban city modern downtown skyline metropolitan" },
-  { id: "beach", label: "Beach Escape", icon: "🏖️", query: "beach ocean seaside coastal beachfront" },
-];
-
 const Hero = ({ onEmotionSearch }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedMood, setSelectedMood] = useState(null);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleMoodSelect = (mood) => {
-    setSelectedMood(mood.id);
-    const slideIndex = slides.findIndex((slide) => slide.mood === mood.id);
-    if (slideIndex !== -1) {
-      setCurrentSlide(slideIndex);
-    }
-    // Trigger emotion search
-    if (onEmotionSearch) {
-      onEmotionSearch(mood.query);
-    }
-  };
-
   const scrollToHotels = () => {
     const hotelsSection = document.getElementById('hotels-section');
     if (hotelsSection) {
@@ -73,117 +13,92 @@ const Hero = ({ onEmotionSearch }) => {
     }
   };
 
+  const scrollToChat = () => {
+    const chatSection = document.querySelector('[href="/chat"]');
+    if (chatSection) {
+      chatSection.click();
+    }
+  };
+
+  const watermarkRef = useRef(null);
+
+  useEffect(() => {
+    // gentle floating animation for the watermark using GSAP
+    if (watermarkRef.current) {
+      gsap.to(watermarkRef.current, { y: -18, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    }
+  }, []);
+
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Background Carousel */}
-      <div className="absolute inset-0">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center animate-dome-rotate"
-              style={{
-                backgroundImage: `url(${slide.image})`,
-                filter: index === currentSlide ? "blur(0px)" : "blur(8px)",
-              }}
-            />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-overlay" />
-          </div>
-        ))}
+      {/* Background Image - Extends to top */}
+      <div className="absolute inset-0 top-0">
+        <div
+          className="absolute inset-0 bg-cover bg-top"
+          style={{
+            backgroundImage: `url(/bg-hero.jpg)`,
+            backgroundPosition: 'top center',
+            backgroundSize: 'cover',
+          }}
+        />
+        {/* Dark Overlay - reduced opacity so sky is more visible */}
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-        {/* Logo */}
-        <div className="mb-6 animate-fade-in">
-          <h1 className="font-serif text-5xl font-light tracking-wider text-primary-foreground md:text-7xl">
+      {/* Content: align left-bottom so headline + CTAs appear in left bottom of hero */}
+      <div className="relative z-10 flex h-full flex-col items-start justify-end px-4 text-left">
+        {/* Large Hotello Text Overlay - Positioned to the right in sky area like StayGo */}
+        <div className="absolute top-20 right-0 left-0 flex items-start justify-end pr-8 md:pr-16 lg:pr-24 pointer-events-none">
+          <motion.h1 ref={watermarkRef} className="hero-title-overlay text-right" initial={{ opacity: 0.95, y: 0 }} animate={{ opacity: 0.95 }} transition={{ duration: 1 }}>
             Hotello
-          </h1>
-          <div className="mx-auto mt-2 h-px w-32 bg-gradient-gold" />
+          </motion.h1>
         </div>
 
-        {/* Headline + Subheadline */}
-        <div className="mb-8 max-w-4xl animate-fade-in-delay">
-          <h2 className="mb-4 text-4xl font-light leading-tight text-primary-foreground md:text-6xl">
-            {slides[currentSlide].title}
-          </h2>
-          <p className="text-lg text-primary-foreground/80 md:text-xl">
-            {slides[currentSlide].subtitle}
-          </p>
-        </div>
-
-        {/* Mood Selector Chips */}
-        <div className="mb-8 flex flex-wrap justify-center gap-3 animate-fade-in-delay-2">
-          {moods.map((mood) => (
-            <button
-              key={mood.id}
-              onClick={() => handleMoodSelect(mood)}
-              className={`group relative rounded-full border px-6 py-2.5 backdrop-blur-glass transition-all hover:scale-105 active:scale-95 ${
-                selectedMood === mood.id
-                  ? "border-gold bg-gradient-gold text-primary shadow-lg"
-                  : "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground hover:border-gold-light hover:bg-primary-foreground/20"
-              }`}
-            >
-              <span className="mr-2 text-lg">{mood.icon}</span>
-              <span className="text-sm font-medium">{mood.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row animate-fade-in-delay-3">
-          <Button
-            size="lg"
-            onClick={scrollToHotels}
-            className="group rounded-full bg-gradient-gold px-8 py-6 text-base font-medium text-primary shadow-2xl transition-all hover:scale-105 hover:shadow-xl"
+        {/* Main Content (left-bottom) */}
+        <motion.div className="relative z-20 mb-12 w-full max-w-3xl pl-4 md:pl-8 lg:pl-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: 'easeOut' }}
+        >
+          {/* Headline */}
+          <motion.h2 className="mb-6 text-4xl font-normal leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <Map className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
-            Explore Destinations
-          </Button>
-          <Button
-            size="lg"
-            variant="ghost"
-            onClick={scrollToHotels}
-            className="rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-8 py-6 text-base font-medium text-primary-foreground backdrop-blur-glass transition-all hover:scale-105 hover:border-gold hover:bg-primary-foreground/20"
+            Find Your Perfect Stay<br />at the Best Price
+          </motion.h2>
+
+          {/* CTA Buttons - left aligned and placed near bottom-left */}
+          <motion.div className="flex flex-col sm:flex-row gap-4 items-start"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.8 }}
           >
-            <Sparkles className="mr-2 h-5 w-5" />
-            Ask Hotello AI
-          </Button>
-        </div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                size="lg"
+                onClick={scrollToHotels}
+                className="group rounded-full bg-gradient-gold px-6 py-3 text-base font-semibold text-gray-900 shadow-2xl transition-all hover:scale-105 hover:shadow-xl border-0"
+              >
+                <Map className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
+                Explore Destinations
+              </Button>
+            </motion.div>
 
-        {/* Trust Badge */}
-        <div className="mb-12 flex items-center gap-2 rounded-full border border-gold/30 bg-primary-foreground/5 px-6 py-2 backdrop-blur-glass animate-fade-in-delay-4">
-          <Star className="h-4 w-4 fill-gold text-gold" />
-          <span className="text-sm text-primary-foreground/90">
-            Trusted by 120+ Luxury Hotels Worldwide
-          </span>
-        </div>
-
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-20 left-1/2 flex -translate-x-1/2 gap-2">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all ${
-                index === currentSlide
-                  ? "w-8 bg-gold"
-                  : "w-2 bg-primary-foreground/30 hover:bg-primary-foreground/50"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce-slow">
-          <ChevronDown className="h-8 w-8 text-primary-foreground/60" />
-        </div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                size="lg"
+                variant="ghost"
+                onClick={() => window.location.href = '/chat'}
+                className="rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur-lg transition-all hover:scale-105 hover:border-white/50 hover:bg-white/20"
+              >
+                <MessageSquare className="mr-2 h-5 w-5" />
+                Ask Hotello AI
+              </Button>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
