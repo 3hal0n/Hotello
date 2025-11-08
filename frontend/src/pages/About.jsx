@@ -43,7 +43,7 @@ export default function About() {
     {
       name: 'Shalon',
       role: 'CEO & CTO',
-      image: 'assets/team/shalon.png',
+      image: 'assets/img/shalon.png',
       bio: 'Visionary leader & technology innovator driving Hotello forward'
     }
   ];
