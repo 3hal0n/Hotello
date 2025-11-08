@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Toast from '../components/Toast';
 import useApi from '../hooks/useApi';
+import HotelCard from '../components/HotelCard';
 import { useAuth } from '@clerk/clerk-react';
 import { Send, Bot, User, Sparkles, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 
@@ -58,12 +59,13 @@ export default function Chat() {
     if (!input.trim()) return;
     
     setLoading(true);
-    const userMessage = { role: 'user', text: input.trim() };
+    const query = input.trim();
+    const userMessage = { role: 'user', text: query };
     setMessages((m) => [...m, userMessage]);
     setInput('');
     
     try {
-      const res = await api.sendChatMessage(input);
+  const res = await api.sendChatMessage(query);
       if (res && res.success) {
         setMessages((m) => [...m, { role: 'assistant', text: res.response }]);
       } else {
@@ -71,6 +73,16 @@ export default function Chat() {
           role: 'assistant', 
           text: '😕 I apologize, but I couldn\'t process your request right now. Please try again or rephrase your question.' 
         }]);
+      }
+
+      // Also fetch AI-backed hotel recommendations for the same query and show links
+      try {
+        const rec = await api.fetchRecommendations(query);
+        if (rec && rec.success && Array.isArray(rec.data) && rec.data.length > 0) {
+          setMessages((m) => [...m, { role: 'assistant', text: 'Here are some hotels you might like:', hotels: rec.data }]);
+        }
+      } catch (recErr) {
+        console.warn('Recommendation lookup failed:', recErr);
       }
     } catch (err) {
       console.error('Chat error:', err);
@@ -148,42 +160,79 @@ export default function Chat() {
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col h-[80vh] md:h-[640px]">
                 {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-gray-50/50 to-white" role="log" aria-live="polite">
-                  {messages.map((m, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.28, delay: i * 0.03 }}
-                      className={`flex gap-4 items-end ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-                    >
-                      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                        m.role === 'user'
-                          ? 'bg-gradient-to-br from-blue-500 to-purple-600'
-                          : 'bg-gradient-to-br from-green-400 to-blue-500'
-                      } shadow-lg`}> 
-                        {m.role === 'user' ? (
-                          <User className="w-6 h-6 text-white" />
-                        ) : (
-                          <Bot className="w-6 h-6 text-white" />
-                        )}
-                      </div>
+                  {messages.map((m, i) => {
+                    // If the assistant returned a hotels array, render a hotel-card grid inside the message
+                    if (m.hotels && Array.isArray(m.hotels)) {
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.28, delay: i * 0.03 }}
+                          className={`flex gap-4 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                        >
+                          <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                            m.role === 'user'
+                              ? 'bg-gradient-to-br from-blue-500 to-purple-600'
+                              : 'bg-gradient-to-br from-green-400 to-blue-500'
+                          } shadow-lg`}>
+                            {m.role === 'user' ? <User className="w-6 h-6 text-white" /> : <Bot className="w-6 h-6 text-white" />}
+                          </div>
 
-                      <div className={`flex-1 max-w-3xl ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
-                        <motion.div whileHover={{ scale: 1.01 }} className={`relative inline-block px-6 py-4 rounded-2xl ${
-                          m.role === 'user'
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                            : 'bg-gray-50 border border-gray-100 text-gray-900'
-                        }`}>
-                          <p className="text-base leading-relaxed whitespace-pre-wrap">
-                            {m.text}
-                          </p>
+                          <div className="flex-1 max-w-4xl">
+                            {m.text && (
+                              <div className="mb-4 text-sm text-gray-700">{m.text}</div>
+                            )}
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {m.hotels.map((hotel) => (
+                                <div key={hotel._id} className="">
+                                  <HotelCard hotel={hotel} />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </motion.div>
-                        <p className="text-xs text-gray-400 mt-2 px-2">
-                          {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
+                      );
+                    }
+
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.28, delay: i * 0.03 }}
+                        className={`flex gap-4 items-end ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                      >
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                          m.role === 'user'
+                            ? 'bg-gradient-to-br from-blue-500 to-purple-600'
+                            : 'bg-gradient-to-br from-green-400 to-blue-500'
+                        } shadow-lg`}> 
+                          {m.role === 'user' ? (
+                            <User className="w-6 h-6 text-white" />
+                          ) : (
+                            <Bot className="w-6 h-6 text-white" />
+                          )}
+                        </div>
+
+                        <div className={`flex-1 max-w-3xl ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
+                          <motion.div whileHover={{ scale: 1.01 }} className={`relative inline-block px-6 py-4 rounded-2xl ${
+                            m.role === 'user'
+                              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                              : 'bg-gray-50 border border-gray-100 text-gray-900'
+                          }`}>
+                            <p className="text-base leading-relaxed whitespace-pre-wrap">
+                              {m.text}
+                            </p>
+                          </motion.div>
+                          <p className="text-xs text-gray-400 mt-2 px-2">
+                            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
 
                   {loading && (
                     <div className="flex gap-4 animate-fade-in">
