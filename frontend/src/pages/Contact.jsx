@@ -87,12 +87,31 @@ export default function Contact() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactInfo.map((info, index) => {
               const Icon = info.icon;
+              // map the semantic color name to a concrete Tailwind gradient class
+              let gradientClass = 'from-blue-400 to-blue-600';
+              switch (info.color) {
+                case 'blue':
+                  gradientClass = 'from-blue-400 to-blue-600';
+                  break;
+                case 'green':
+                  gradientClass = 'from-green-400 to-green-600';
+                  break;
+                case 'purple':
+                  gradientClass = 'from-purple-400 to-purple-600';
+                  break;
+                case 'orange':
+                  gradientClass = 'from-orange-400 to-orange-600';
+                  break;
+                default:
+                  gradientClass = 'from-blue-400 to-blue-600';
+              }
+
               return (
                 <div
                   key={index}
                   className="group bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br from-${info.color}-400 to-${info.color}-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gradientClass} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{info.title}</h3>
