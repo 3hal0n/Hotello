@@ -6,6 +6,7 @@ import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tool
 export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [hotels, setHotels] = useState([]);
@@ -21,6 +22,19 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  // Detect mobile breakpoint to change sidebar behaviour
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      // collapse sidebar by default on mobile
+      setSidebarOpen(!mobile);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const showToast = (type, message, icon) => {
     setToast({ type, message, icon });
@@ -172,7 +186,11 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   return (
     <div className="flex h-screen bg-gray-50">
       {toast && <Toast type={toast.type} message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gradient-to-b from-blue-600 to-purple-700 text-white transition-all duration-300 flex flex-col`}>
+      {/* Sidebar: behaves as fixed overlay on mobile, persistent on desktop */}
+      <aside className={
+        `${isMobile ? 'fixed inset-y-0 left-0 z-40 transition-transform' : ''} ` +
+        `${isMobile ? (sidebarOpen ? 'translate-x-0' : '-translate-x-full') : (sidebarOpen ? 'w-64' : 'w-20')} bg-gradient-to-b from-blue-600 to-purple-700 text-white transition-all duration-300 flex flex-col`
+      }>
         <div className="p-6 flex items-center justify-between">
           {sidebarOpen && <h1 className="text-2xl font-bold">Hotel Admin</h1>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-lg hover:bg-white/10">
@@ -196,8 +214,21 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         </div>
       </aside>
 
+      {/* Mobile overlay when sidebar is open */}
+      {isMobile && sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/30 z-30" />
+      )}
+
       <main className="flex-1 overflow-auto">
-        <div className="p-8">
+        <div className="p-4 sm:p-8">
+          {/* Mobile menu button (when sidebar is hidden) */}
+          {isMobile && !sidebarOpen && (
+            <div className="mb-4">
+              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg bg-white shadow-md">
+                <Menu size={20} />
+              </button>
+            </div>
+          )}
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-2">
               {activeTab === 'dashboard' && 'Dashboard Overview'}

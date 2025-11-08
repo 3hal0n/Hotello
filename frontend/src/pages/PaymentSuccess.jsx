@@ -33,8 +33,29 @@ export default function PaymentSuccess() {
           return;
         }
         if (data && data.success && data.data) {
-          if (data.data.paymentStatus === 'paid') setStatus('Payment successful! Your booking is confirmed.');
-          else setStatus('Payment received — please wait while we confirm your booking.');
+          if (data.data.paymentStatus === 'paid') {
+            setStatus('Payment successful! Your booking is confirmed.');
+          } else {
+            setStatus('Payment received — please wait while we confirm your booking.');
+            // Start short polling to wait for webhook to update booking status (if user stayed signed in)
+            let attempts = 0;
+            const maxAttempts = 10; // ~30s of polling
+            const interval = setInterval(async () => {
+              attempts += 1;
+              try {
+                const polled = await api.fetchBookingById(bookingId);
+                if (polled && polled.success && polled.data && polled.data.paymentStatus === 'paid') {
+                  setStatus('Payment successful! Your booking is confirmed.');
+                  clearInterval(interval);
+                } else if (attempts >= maxAttempts) {
+                  clearInterval(interval);
+                }
+              } catch (err) {
+                console.error('Polling booking status error:', err);
+                if (attempts >= maxAttempts) clearInterval(interval);
+              }
+            }, 3000);
+          }
         } else if (data && data.success === false) {
           setStatus(data.message || 'Booking not found');
         } else {
