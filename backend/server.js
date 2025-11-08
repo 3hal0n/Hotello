@@ -7,7 +7,17 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/hotello';
 
 // Middleware
-app.use(cors());
+// Configure CORS to allow frontend domain
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',          // Local development
+    'http://localhost:3000',          // Alternative local port
+    'https://hotello-ebon.vercel.app' // Production frontend
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Admin routes
