@@ -64,6 +64,9 @@ async function paymentWebhook(req, res) {
   try {
     const event = req.body;
 
+    // Log incoming event for debugging (inspect Render/production logs)
+    console.log('Stripe webhook received:', event?.type);
+
     // In development, accept JSON events without signature verification
     // In production, you should verify the webhook signature using stripe.webhooks.constructEvent
     // For now, we'll accept the events as-is for testing
@@ -72,12 +75,17 @@ async function paymentWebhook(req, res) {
     if (type === 'checkout.session.completed' || type === 'checkout.session.async_payment_succeeded') {
       const session = event.data.object;
       const bookingId = session.metadata?.bookingId;
-      
+      console.log('Webhook session metadata:', session?.metadata);
+
       if (bookingId) {
         await Bookings.findByIdAndUpdate(bookingId, { paymentStatus: 'paid' });
         await Payments.findOneAndUpdate({ bookingId }, { status: 'completed' });
         console.log(`Payment completed for booking ${bookingId}`);
+      } else {
+        console.warn('Webhook received but no bookingId metadata present on session');
       }
+    } else {
+      console.log('Webhook ignored, type:', type);
     }
 
     res.json({ received: true });
