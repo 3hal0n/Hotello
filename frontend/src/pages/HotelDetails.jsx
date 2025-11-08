@@ -130,12 +130,13 @@ export default function HotelDetails() {
       }
       const item = {
         hotelId: hotel._id,
+        hotelName: hotel.name,
         roomType: hotel.roomTypes && hotel.roomTypes[0] ? hotel.roomTypes[0].type : '',
         checkIn: null,
         checkOut: null,
         guests: 1,
         price: hotel.pricePerNight,
-        image: hotel.images && hotel.images[0] ? hotel.images[0].url : '',
+        image: hotel.images && hotel.images[0] ? (hotel.images[0].url || hotel.images[0]) : '',
       };
       items.push(item);
       await api.updateCart({ items });
