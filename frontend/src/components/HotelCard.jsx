@@ -34,20 +34,41 @@ export default function HotelCard({ hotel }) {
     glareRef.current.style.opacity = '0';
   };
 
-  // Use local image assets instead of online URLs
-  const getLocalImage = () => {
-    if (!hotel.name) return null;
+  // Use local image assets with robust folder normalization and extension fallbacks
+  const getFolderName = () => {
+    if (!hotel?.name) return null;
     // Convert hotel name to folder name (lowercase, spaces to hyphens)
-    const folderName = hotel.name.toLowerCase().replace(/\s+/g, '-');
-    // Use first image by default (img1.jpg)
-    return `/assets/img/${folderName}/img1.jpg`;
+    // Also remove any non-alphanumeric or hyphen characters (e.g. & , .)
+    return hotel.name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
   };
 
-  const [imgSrc, setImgSrc] = useState(getLocalImage());
+  const baseImagePath = () => {
+    const folderName = getFolderName();
+    if (!folderName) return null;
+    return `/assets/img/${folderName}/img1`;
+  };
+
+  const exts = ['jpg', 'png', 'jfif', 'jpeg', 'webp'];
+  const [extIndex, setExtIndex] = useState(0);
+  const [imgSrc, setImgSrc] = useState(() => {
+    const base = baseImagePath();
+    return base ? `${base}.${exts[0]}` : null;
+  });
   const [imgError, setImgError] = useState(false);
 
   const handleImgError = () => {
-    setImgError(true);
+    // Try next extension if available, otherwise show placeholder
+    const next = extIndex + 1;
+    if (next < exts.length) {
+      setExtIndex(next);
+      const base = baseImagePath();
+      if (base) setImgSrc(`${base}.${exts[next]}`);
+    } else {
+      setImgError(true);
+    }
   };
 
   return (
