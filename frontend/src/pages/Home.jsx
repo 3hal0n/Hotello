@@ -405,49 +405,49 @@ export default function Home() {
                   { 
                     city: 'Colombo', 
                     hotels: 5, 
-                    image: '/assets/img/cinnamon-grand-colombo/exterior.jpg',
+                    image: '/assets/img/colombo.png',
                     description: 'Vibrant capital city'
                   },
                   { 
                     city: 'Kandy', 
                     hotels: 3, 
-                    image: '/assets/img/earls-regency-kandy/exterior.jpg',
+                    image: '/assets/img/kandy.png',
                     description: 'Cultural heart of Sri Lanka'
                   },
                   { 
                     city: 'Galle', 
                     hotels: 2, 
-                    image: '/assets/img/galle-face-hotel/exterior.jpg',
+                    image: '/assets/img/galle.png',
                     description: 'Historic coastal city'
                   },
                   { 
                     city: 'Nuwara Eliya', 
                     hotels: 3, 
-                    image: '/assets/img/grand-hotel-nuwara-eliya/exterior.jpg',
+                    image: '/assets/img/nuwaraEliye.png',
                     description: 'Little England of Sri Lanka'
                   },
                   { 
                     city: 'Bentota', 
                     hotels: 2, 
-                    image: '/assets/img/avani-bentota-resort/exterior.jpg',
+                    image: '/assets/img/bentota.png',
                     description: 'Beach paradise'
                   },
                   { 
                     city: 'Sigiriya', 
                     hotels: 2, 
-                    image: '/assets/img/water-garden-sigiriya/exterior.jpg',
+                    image: '/assets/img/sigiriya.png',
                     description: 'Ancient rock fortress'
                   },
                   { 
                     city: 'Dambulla', 
                     hotels: 1, 
-                    image: '/assets/img/amaya-lake-dambulla/exterior.jpg',
+                    image: '/assets/img/dambulla.png',
                     description: 'Cave temples & nature'
                   },
                   { 
                     city: 'Tangalle', 
                     hotels: 2, 
-                    image: '/assets/img/anantara-peace-haven-tangalle/exterior.jpg',
+                    image: '/assets/img/tangalle.png',
                     description: 'Serene beach retreat'
                   },
                 ].map((destination, index) => (
