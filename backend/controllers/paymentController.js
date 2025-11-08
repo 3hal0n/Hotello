@@ -31,9 +31,14 @@ async function createPaymentSession(req, res) {
       });
     }
 
-    const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const successUrl = `${frontend}/payment-success?bookingId=${booking._id}`;
-    const cancelUrl = `${frontend}/hotels/${booking.hotelId}`;
+  const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const successUrl = `${frontend}/payment-success?bookingId=${booking._id}`;
+  const cancelUrl = `${frontend}/hotels/${booking.hotelId}`;
+
+  // Debug logging to help verify which frontend URL is used in production (Inspect Render logs)
+  console.log('Creating checkout session with FRONTEND_URL:', process.env.FRONTEND_URL);
+  console.log('Constructed successUrl:', successUrl);
+  console.log('Constructed cancelUrl:', cancelUrl);
 
     const session = await createCheckoutSession({
       amount: booking.totalAmount,
