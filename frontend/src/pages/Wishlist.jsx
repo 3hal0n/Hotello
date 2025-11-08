@@ -71,8 +71,8 @@ export default function Wishlist() {
       await api.addToCart({
         hotelId: hotel._id,
         hotelName: hotel.name,
-        image: hotel.images?.[0],
-        price: hotel.pricePerNight || hotel.price,
+        image: hotel.images?.[0]?.url || hotel.images?.[0] || '/hotel-placeholder.jpg',
+        price: hotel.pricePerNight || hotel.price || 0,
         roomType: 'Standard Room',
         guests: 2
       });

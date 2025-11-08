@@ -5,8 +5,34 @@ async function getCart(req, res) {
   try {
     const userId = req.auth?.userId;
     const cart = await Cart.findOne({ userId }).populate('items.hotelId');
+    
+    // Enrich items with hotel details if missing
+    if (cart && cart.items) {
+      cart.items = cart.items.map(item => {
+        const itemObj = item.toObject ? item.toObject() : item;
+        const hotel = itemObj.hotelId;
+        
+        if (hotel && typeof hotel === 'object') {
+          // Populate missing fields from the hotel document
+          if (!itemObj.hotelName && hotel.name) {
+            itemObj.hotelName = hotel.name;
+          }
+          if (!itemObj.image && hotel.images && hotel.images.length > 0) {
+            const img = hotel.images[0];
+            itemObj.image = img.url || img;
+          }
+          if (!itemObj.price && hotel.pricePerNight) {
+            itemObj.price = hotel.pricePerNight;
+          }
+        }
+        
+        return itemObj;
+      });
+    }
+    
     res.json({ success: true, data: cart });
   } catch (error) {
+    console.error('Get cart error:', error);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 }

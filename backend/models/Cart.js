@@ -9,6 +9,7 @@ const cartSchema = new mongoose.Schema({
   items: [
     {
       hotelId: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotels', required: true },
+      hotelName: { type: String },
       roomType: { type: String },
       checkIn: { type: Date },
       checkOut: { type: Date },
