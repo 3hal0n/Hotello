@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -12,6 +12,10 @@ import { AIChatbot } from '../components/AIChatbot';
 import { Sparkles, MapPin, Filter, Star, Quote } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
+// Lazy load admin components
+const AdminLogin = lazy(() => import('../components/AdminLogin.jsx'));
+const AdminDashboard = lazy(() => import('./AdminDashboard.jsx'));
+
 export default function Home() {
   const [allHotels, setAllHotels] = useState([]); // Store all hotels
   const [hotels, setHotels] = useState([]); // Display hotels
@@ -19,8 +23,6 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [AdminLoginComp, setAdminLoginComp] = useState(null);
-  const [AdminDashboardComp, setAdminDashboardComp] = useState(null);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,8 +58,8 @@ export default function Home() {
       });
   }, []);
 
-  // Filter and sort hotels
-  useEffect(() => {
+  // Memoized filter and sort hotels function
+  const filteredAndSortedHotels = useMemo(() => {
     let filtered = [...allHotels];
 
     // Enhanced search filter with emotion keywords
@@ -101,9 +103,14 @@ export default function Home() {
       filtered.sort((a, b) => b.rating - a.rating);
     }
 
-    setHotels(filtered);
-    setCurrentPage(1); // Reset to first page when filters change
+    return filtered;
   }, [searchQuery, priceRange, rating, sortBy, allHotels]);
+
+  // Update hotels when filtered results change
+  useEffect(() => {
+    setHotels(filteredAndSortedHotels);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filteredAndSortedHotels]);
 
   // Handle emotion search from Hero
   const handleEmotionSearch = (emotionQuery) => {
@@ -116,28 +123,20 @@ export default function Home() {
   const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
   const totalPages = Math.ceil(hotels.length / hotelsPerPage);
 
-  async function handleAdminLogin(token, admin) {
+  const handleAdminLogin = useCallback((token, admin) => {
     setIsAdmin(true);
     setShowAdminLogin(false);
-    if (!AdminDashboardComp) {
-      const mod = await import('./AdminDashboard.jsx');
-      setAdminDashboardComp(() => mod.default);
-    }
-  }
+  }, []);
 
-  function handleAdminLogout() {
+  const handleAdminLogout = useCallback(() => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     setIsAdmin(false);
-  }
+  }, []);
 
-  async function openAdminLogin() {
+  const openAdminLogin = useCallback(() => {
     setShowAdminLogin(true);
-    if (!AdminLoginComp) {
-      const mod = await import('../components/AdminLogin.jsx');
-      setAdminLoginComp(() => mod.default);
-    }
-  }
+  }, []);
 
   if (loading) {
     return (
@@ -461,6 +460,8 @@ export default function Home() {
                       <img
                         src={destination.image}
                         alt={destination.city}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {
                           e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400';
@@ -549,6 +550,8 @@ export default function Home() {
                         <img
                           src={review.image}
                           alt={review.name}
+                          loading="lazy"
+                          decoding="async"
                           className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
                         />
                         <div className="text-white">
@@ -650,9 +653,9 @@ export default function Home() {
                   className="absolute top-2 right-4 text-gray-400 text-xl"
                   onClick={() => setShowAdminLogin(false)}
                 >×</button>
-                <React.Suspense fallback={<div>Loading...</div>}>
-                  {AdminLoginComp ? <AdminLoginComp onLogin={handleAdminLogin} /> : null}
-                </React.Suspense>
+                <Suspense fallback={<div className="p-4 text-center">Loading...</div>}>
+                  <AdminLogin onLogin={handleAdminLogin} />
+                </Suspense>
               </div>
             </div>
           )}
@@ -663,15 +666,13 @@ export default function Home() {
           <Footer />
         </>
       ) : (
-        <React.Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div></div>}>
-          {AdminDashboardComp ? (
-            <AdminDashboardComp 
-              adminToken={localStorage.getItem('adminToken')} 
-              adminUser={JSON.parse(localStorage.getItem('adminUser') || '{}')}
-              onLogout={handleAdminLogout}
-            />
-          ) : null}
-        </React.Suspense>
+        <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-600"></div></div>}>
+          <AdminDashboard 
+            adminToken={localStorage.getItem('adminToken')} 
+            adminUser={JSON.parse(localStorage.getItem('adminUser') || '{}')}
+            onLogout={handleAdminLogout}
+          />
+        </Suspense>
       )}
     </div>
   );
