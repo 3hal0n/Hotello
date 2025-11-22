@@ -280,10 +280,10 @@ export default function Home() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
                     >
                       <option value="">All Prices</option>
-                      <option value="0-10000">Under $100</option>
-                      <option value="10000-20000">$100 - $200</option>
-                      <option value="20000-30000">$200 - $300</option>
-                      <option value="30000+">$300+</option>
+                      <option value="0-10000">Under LKR 10,000</option>
+                      <option value="10000-20000">LKR 10,000 - 20,000</option>
+                      <option value="20000-30000">LKR 20,000 - 30,000</option>
+                      <option value="30000+">LKR 30,000+</option>
                     </select>
                   </div>
 

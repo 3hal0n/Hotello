@@ -325,7 +325,7 @@ export default function HotelDetails() {
                     <div className="mb-6 text-center pb-6 border-b border-blue-200">
                       <p className="text-sm text-gray-600 mb-1">Starting from</p>
                       <p className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        ${hotel.pricePerNight}
+                        LKR {hotel.pricePerNight.toLocaleString()}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">per night</p>
                     </div>
@@ -365,13 +365,13 @@ export default function HotelDetails() {
                     {nights > 0 && (
                       <div className="bg-white rounded-xl p-4 mb-6 shadow-sm">
                         <div className="flex justify-between mb-3 text-gray-700">
-                          <span>${hotel.pricePerNight} × {nights} night{nights !== 1 ? 's' : ''}</span>
-                          <span className="font-semibold">${totalPrice}</span>
+                          <span>LKR {hotel.pricePerNight.toLocaleString()} × {nights} night{nights !== 1 ? 's' : ''}</span>
+                          <span className="font-semibold">LKR {totalPrice.toLocaleString()}</span>
                         </div>
                         <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
                           <span className="font-bold text-gray-900">Total</span>
                           <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            ${totalPrice}
+                            LKR {totalPrice.toLocaleString()}
                           </span>
                         </div>
                       </div>

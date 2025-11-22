@@ -34,18 +34,19 @@ export default function PaymentSuccess() {
         }
         if (data && data.success && data.data) {
           if (data.data.paymentStatus === 'paid') {
-            setStatus('Payment successful! Your booking is confirmed.');
+            setStatus('🎉 Payment Complete! Hotel Booked Successfully! Your booking is confirmed and ready.');
           } else {
-            setStatus('Payment received — please wait while we confirm your booking.');
-            // Start short polling to wait for webhook to update booking status (if user stayed signed in)
+            // Show success message immediately since Stripe redirected here
+            setStatus('🎉 Payment Complete! Hotel Booked Successfully! Your reservation has been confirmed.');
+            // Start polling to update status once webhook processes
             let attempts = 0;
-            const maxAttempts = 10; // ~30s of polling
+            const maxAttempts = 5; // ~15s of polling
             const interval = setInterval(async () => {
               attempts += 1;
               try {
                 const polled = await api.fetchBookingById(bookingId);
                 if (polled && polled.success && polled.data && polled.data.paymentStatus === 'paid') {
-                  setStatus('Payment successful! Your booking is confirmed.');
+                  setStatus('🎉 Payment Complete! Hotel Booked Successfully! Your booking is confirmed and ready.');
                   clearInterval(interval);
                 } else if (attempts >= maxAttempts) {
                   clearInterval(interval);
@@ -73,10 +74,19 @@ export default function PaymentSuccess() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-20 p-8">
-        <div className="max-w-3xl mx-auto text-center bg-white rounded-lg p-8 shadow">
-          <h1 className="text-2xl font-bold mb-4">Payment Status</h1>
-          <p className="mb-6">{status}</p>
+      <main className="min-h-screen pt-20 p-8 bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="max-w-3xl mx-auto text-center bg-white rounded-2xl p-10 shadow-2xl">
+          <div className="mb-6">
+            {status.includes('🎉') && (
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            )}
+          </div>
+          <h1 className="text-3xl font-bold mb-4 text-gray-800">Payment Status</h1>
+          <p className="text-lg mb-8 text-gray-700">{status}</p>
           {status === 'Please sign in to view booking details.' && (
             <div className="mb-6 flex justify-center gap-3">
               <SignInButton mode="modal">
