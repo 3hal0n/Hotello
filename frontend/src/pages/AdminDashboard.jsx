@@ -15,6 +15,17 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [toast, setToast] = useState(null);
+  const [showHotelModal, setShowHotelModal] = useState(false);
+  const [editingHotel, setEditingHotel] = useState(null);
+  const [hotelForm, setHotelForm] = useState({
+    name: '',
+    description: '',
+    location: '',
+    pricePerNight: '',
+    amenities: '',
+    policies: '',
+    rating: 4.5
+  });
 
   useEffect(() => {
     if (toast) {
@@ -107,7 +118,9 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
+      console.log('Bookings response:', data);
       if (data.success) {
+        console.log('First booking userDetails:', data.data[0]?.userDetails);
         setBookings(data.data || []);
         setError('');
       } else {
@@ -115,7 +128,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
       }
     } catch (err) {
       setError('Failed to load bookings');
-      console.error(err);
+      console.error('Bookings fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -128,7 +141,9 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
+      console.log('Users response:', data);
       if (data.success) {
+        console.log('First user with booking count:', data.data[0]);
         setUsers(data.data || []);
         setError('');
       } else {
@@ -136,7 +151,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
       }
     } catch (err) {
       setError('Failed to load users');
-      console.error(err);
+      console.error('Users fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -160,6 +175,74 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
     } catch (err) {
       console.error(err);
       showToast('error', 'Error deleting hotel', <XCircle />);
+    }
+  };
+
+  const openAddHotel = () => {
+    setEditingHotel(null);
+    setHotelForm({
+      name: '',
+      description: '',
+      location: '',
+      pricePerNight: '',
+      amenities: '',
+      policies: '',
+      rating: 4.5
+    });
+    setShowHotelModal(true);
+  };
+
+  const openEditHotel = (hotel) => {
+    setEditingHotel(hotel);
+    setHotelForm({
+      name: hotel.name || '',
+      description: hotel.description || '',
+      location: hotel.location || '',
+      pricePerNight: hotel.pricePerNight || '',
+      amenities: Array.isArray(hotel.amenities) ? hotel.amenities.join(', ') : '',
+      policies: hotel.policies || '',
+      rating: hotel.rating || 4.5
+    });
+    setShowHotelModal(true);
+  };
+
+  const handleSaveHotel = async () => {
+    try {
+      const amenitiesArray = hotelForm.amenities.split(',').map(a => a.trim()).filter(a => a);
+      const hotelData = {
+        ...hotelForm,
+        pricePerNight: Number(hotelForm.pricePerNight),
+        amenities: amenitiesArray,
+        ownerId: adminUser?.id || '507f1f77bcf86cd799439011' // Placeholder owner ID
+      };
+
+      const url = editingHotel 
+        ? `${API_BASE}/api/admin/hotels/${editingHotel._id}`
+        : `${API_BASE}/api/admin/hotels`;
+      
+      const method = editingHotel ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify(hotelData)
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        showToast('success', editingHotel ? 'Hotel updated!' : 'Hotel created!', <CheckCircle />);
+        setShowHotelModal(false);
+        fetchHotels(); // Refresh list
+      } else {
+        showToast('error', data.message || 'Failed to save hotel', <XCircle />);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Error saving hotel', <XCircle />);
     }
   };
 
@@ -334,7 +417,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                   <input type="text" placeholder="Search hotels..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <button className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                <button onClick={openAddHotel} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
                   <Plus size={20} /> Add Hotel
                 </button>
               </div>
@@ -361,7 +444,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                           <Eye size={16} /> View
                         </button>
                         <button 
-                          onClick={() => showToast('info', 'Edit feature coming soon!', <AlertCircle />)}
+                          onClick={() => openEditHotel(hotel)}
                           className="flex-1 flex items-center justify-center gap-1 bg-green-50 text-green-600 px-3 py-2 rounded-lg hover:bg-green-100"
                         >
                           <Edit2 size={16} /> Edit
@@ -464,6 +547,119 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
           )}
         </div>
       </main>
+
+      {/* Hotel Add/Edit Modal */}
+      {showHotelModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-gray-800">
+                {editingHotel ? 'Edit Hotel' : 'Add New Hotel'}
+              </h3>
+              <button onClick={() => setShowHotelModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Hotel Name *</label>
+                <input
+                  type="text"
+                  value={hotelForm.name}
+                  onChange={(e) => setHotelForm({ ...hotelForm, name: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter hotel name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                <textarea
+                  value={hotelForm.description}
+                  onChange={(e) => setHotelForm({ ...hotelForm, description: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows="4"
+                  placeholder="Enter hotel description"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Location *</label>
+                <input
+                  type="text"
+                  value={hotelForm.location}
+                  onChange={(e) => setHotelForm({ ...hotelForm, location: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., Colombo, Sri Lanka"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Night ($) *</label>
+                <input
+                  type="number"
+                  value={hotelForm.pricePerNight}
+                  onChange={(e) => setHotelForm({ ...hotelForm, pricePerNight: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter price"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Amenities * (comma-separated)</label>
+                <input
+                  type="text"
+                  value={hotelForm.amenities}
+                  onChange={(e) => setHotelForm({ ...hotelForm, amenities: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., WiFi, Pool, Gym, Spa"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Policies</label>
+                <textarea
+                  value={hotelForm.policies}
+                  onChange={(e) => setHotelForm({ ...hotelForm, policies: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows="3"
+                  placeholder="Enter hotel policies"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Rating (0-5)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value={hotelForm.rating}
+                  onChange={(e) => setHotelForm({ ...hotelForm, rating: e.target.value })}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex gap-3 justify-end border-t">
+              <button
+                onClick={() => setShowHotelModal(false)}
+                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveHotel}
+                disabled={!hotelForm.name || !hotelForm.description || !hotelForm.location || !hotelForm.pricePerNight || !hotelForm.amenities}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {editingHotel ? 'Update Hotel' : 'Create Hotel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

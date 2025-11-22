@@ -85,11 +85,18 @@ async function getDashboardStats(req, res) {
       { $unwind: { path: '$hotelDetails', preserveNullAndEmptyArrays: true } }
     ]);
 
+    console.log('Top hotels aggregation result:', topHotelsData.length, 'hotels');
+    if (topHotelsData.length > 0) {
+      console.log('First aggregated hotel:', topHotelsData[0]);
+    }
+    
     const topHotels = topHotelsData.map(item => ({
       _id: item._id,
       name: item.hotelDetails?.name || 'Unknown Hotel',
       bookingCount: item.bookingCount
     }));
+    
+    console.log('Mapped top hotels:', topHotels);
 
     const [
       totalHotels,
@@ -129,6 +136,18 @@ async function getDashboardStats(req, res) {
       recentBookingsCount: recentBookings.length,
       topHotelsCount: topHotels.length
     });
+    
+    if (recentBookings.length > 0) {
+      console.log('Sample recent booking:', {
+        id: recentBookings[0]._id,
+        totalAmount: recentBookings[0].totalAmount,
+        hotel: recentBookings[0].hotelId?.name
+      });
+    }
+    
+    if (topHotels.length > 0) {
+      console.log('Sample top hotel:', topHotels[0]);
+    }
 
     res.json({
       success: true,
@@ -218,9 +237,15 @@ async function getAllBookings(req, res) {
       .lean();
     
     // Enrich with user data from Users collection
+    console.log('Total bookings found:', bookings.length);
+    if (bookings.length > 0) {
+      console.log('First booking userId:', bookings[0].userId);
+    }
+    
     const enrichedBookings = await Promise.all(
       bookings.map(async (booking) => {
         const user = await Users.findOne({ clerkId: booking.userId }).lean();
+        console.log(`Booking ${booking._id}: userId=${booking.userId}, found user:`, user ? user.name : 'NOT FOUND');
         return {
           ...booking,
           userDetails: user ? { name: user.name, email: user.email } : null
@@ -228,6 +253,7 @@ async function getAllBookings(req, res) {
       })
     );
     
+    console.log('Enriched bookings sample:', enrichedBookings[0]);
     res.json({ success: true, data: enrichedBookings });
   } catch (error) {
     console.error('Get bookings error:', error);
@@ -241,13 +267,20 @@ async function getAllUsers(req, res) {
     const users = await Users.find().sort({ createdAt: -1 }).lean();
     
     // Calculate booking count for each user
+    console.log('Total users found:', users.length);
+    if (users.length > 0) {
+      console.log('First user clerkId:', users[0].clerkId);
+    }
+    
     const usersWithBookings = await Promise.all(
       users.map(async (user) => {
         const bookingCount = await Bookings.countDocuments({ userId: user.clerkId });
+        console.log(`User ${user.email}: clerkId=${user.clerkId}, bookings=${bookingCount}`);
         return { ...user, bookingCount };
       })
     );
     
+    console.log('Users with bookings sample:', usersWithBookings[0]);
     res.json({ success: true, data: usersWithBookings });
   } catch (error) {
     console.error('Get users error:', error);
