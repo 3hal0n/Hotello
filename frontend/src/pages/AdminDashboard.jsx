@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import Toast from '../components/Toast';
-import { LayoutDashboard, Hotel, Calendar, Users, LogOut, Menu, X, Search, DollarSign, TrendingUp, Plus, Edit2, Trash2, Eye, RefreshCw, BarChart3, PieChart as PieChartIcon, CheckCircle, XCircle } from 'lucide-react';
+import { LayoutDashboard, Hotel, Calendar, Users, LogOut, Menu, X, Search, DollarSign, TrendingUp, Plus, Edit2, Trash2, Eye, RefreshCw, BarChart3, PieChart as PieChartIcon, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
@@ -43,11 +43,15 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
   useEffect(() => {
+    if (!adminToken) {
+      console.error('No admin token available');
+      return;
+    }
     if (activeTab === 'dashboard') fetchDashboardStats();
     else if (activeTab === 'hotels') fetchHotels();
     else if (activeTab === 'bookings') fetchBookings();
     else if (activeTab === 'users') fetchUsers();
-  }, [activeTab]);
+  }, [activeTab, adminToken]);
 
   const fetchDashboardStats = async () => {
     try {
@@ -56,7 +60,12 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       const data = await res.json();
+      console.log('Dashboard stats response:', data);
       if (data.success) {
+        console.log('Stats data:', data.data);
+        console.log('Revenue:', data.data.totalRevenue);
+        console.log('Recent bookings:', data.data.recentBookings);
+        console.log('Top hotels:', data.data.topHotels);
         setStats(data.data);
         setError('');
       } else {
@@ -64,7 +73,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
       }
     } catch (err) {
       setError('Failed to load dashboard stats');
-      console.error(err);
+      console.error('Stats fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -155,12 +164,16 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   };
 
   const revenueData = stats?.recentBookings?.slice(0, 7).reverse().map((booking, idx) => ({
-    name: `Day ${idx + 1}`, revenue: booking.totalPrice || 0
+    name: `Day ${idx + 1}`, revenue: booking.totalAmount || 0
   })) || [];
+  
+  console.log('Revenue chart data:', revenueData);
 
   const hotelDistributionData = stats?.topHotels?.slice(0, 5).map((h) => ({
     name: h.name?.substring(0, 20) || 'Unknown', value: h.bookingCount || 0
   })) || [];
+  
+  console.log('Hotel distribution data:', hotelDistributionData);
 
   const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
 
@@ -262,21 +275,27 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                     <BarChart3 className="text-blue-600" />
                     Revenue Trend
                   </h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={revenueData}>
-                      <defs>
-                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fillOpacity={1} fill="url(#colorRevenue)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  {revenueData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={revenueData}>
+                        <defs>
+                          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fillOpacity={1} fill="url(#colorRevenue)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-[300px] text-gray-400">
+                      <p>No revenue data available</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-white rounded-xl shadow-lg p-6">
@@ -284,18 +303,24 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                     <PieChartIcon className="text-purple-600" />
                     Top Hotels
                   </h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie data={hotelDistributionData} cx="50%" cy="50%" labelLine={false}
-                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                        outerRadius={100} dataKey="value">
-                        {hotelDistributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  {hotelDistributionData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie data={hotelDistributionData} cx="50%" cy="50%" labelLine={false}
+                          label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                          outerRadius={100} dataKey="value">
+                          {hotelDistributionData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-[300px] text-gray-400">
+                      <p>No hotel data available</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -317,7 +342,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredHotels.map((hotel) => (
                   <div key={hotel._id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <img src={hotel.images?.[0] || '/placeholder-hotel.jpg'} alt={hotel.name} className="w-full h-48 object-cover" />
+                    <img src={hotel.images?.[0]?.url || hotel.images?.[0] || '/placeholder-hotel.jpg'} alt={hotel.name} className="w-full h-48 object-cover" />
                     <div className="p-4">
                       <h4 className="text-lg font-bold text-gray-800 mb-2">{hotel.name}</h4>
                       <p className="text-gray-600 text-sm mb-2">{hotel.location}</p>
@@ -326,10 +351,19 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                         <span className="text-gray-500 text-sm">/ night</span>
                       </div>
                       <div className="flex gap-2">
-                        <button className="flex-1 flex items-center justify-center gap-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-100">
+                        <button 
+                          onClick={() => {
+                            const url = `${window.location.origin}/hotels/${hotel._id}`;
+                            window.open(url, '_blank');
+                          }}
+                          className="flex-1 flex items-center justify-center gap-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-100"
+                        >
                           <Eye size={16} /> View
                         </button>
-                        <button className="flex-1 flex items-center justify-center gap-1 bg-green-50 text-green-600 px-3 py-2 rounded-lg hover:bg-green-100">
+                        <button 
+                          onClick={() => showToast('info', 'Edit feature coming soon!', <AlertCircle />)}
+                          className="flex-1 flex items-center justify-center gap-1 bg-green-50 text-green-600 px-3 py-2 rounded-lg hover:bg-green-100"
+                        >
                           <Edit2 size={16} /> Edit
                         </button>
                         <button onClick={() => handleDeleteHotel(hotel._id)}
@@ -369,13 +403,13 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                   {bookings.map((booking) => (
                     <tr key={booking._id} className="border-b hover:bg-gray-50">
                       <td className="py-3 px-4 font-mono text-sm">{booking._id.slice(-8)}</td>
-                      <td className="py-3 px-4">{booking.userId?.email || 'N/A'}</td>
+                      <td className="py-3 px-4">{booking.userDetails?.name || booking.userDetails?.email || 'N/A'}</td>
                       <td className="py-3 px-4">{booking.hotelId?.name || 'N/A'}</td>
                       <td className="py-3 px-4">{new Date(booking.checkIn).toLocaleDateString()}</td>
                       <td className="py-3 px-4">{new Date(booking.checkOut).toLocaleDateString()}</td>
-                      <td className="py-3 px-4 font-semibold text-green-600">${booking.totalPrice}</td>
+                      <td className="py-3 px-4 font-semibold text-green-600">${booking.totalAmount?.toLocaleString() || '0'}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-3 py-1 rounded-full text-xs ${booking.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        <span className={`px-3 py-1 rounded-full text-xs ${booking.status === 'booked' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                           {booking.status}
                         </span>
                       </td>

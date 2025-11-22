@@ -32,6 +32,19 @@ export default function Home() {
   const [rating, setRating] = useState('');
   const [sortBy, setSortBy] = useState('featured');
 
+  // Check for existing admin session on mount
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    const user = localStorage.getItem('adminUser');
+    if (token && user) {
+      setIsAdmin(true);
+      // Lazy load admin dashboard component
+      import('./AdminDashboard.jsx').then(mod => {
+        setAdminDashboardComp(() => mod.default);
+      });
+    }
+  }, []);
+
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`)
       .then((r) => r.json())
