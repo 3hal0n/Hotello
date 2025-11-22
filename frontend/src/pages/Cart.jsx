@@ -59,10 +59,20 @@ export default function Cart() {
   }
 
   async function removeItem(index) {
+    // Optimistically update UI immediately
     const items = (cart && cart.items) ? [...cart.items] : [];
-    items.splice(index, 1);
-    await api.updateCart({ items });
-    fetchCart();
+    const updatedItems = items.filter((_, i) => i !== index);
+    setCart({ ...cart, items: updatedItems });
+    
+    // Update backend in background
+    try {
+      await api.updateCart({ items: updatedItems });
+    } catch (err) {
+      console.error('Failed to update cart:', err);
+      // Revert on error
+      setCart({ ...cart, items });
+      showToast('error', 'Failed to remove item', <XCircle />);
+    }
   }
 
   async function addToWishlist(hotel) {
@@ -83,13 +93,47 @@ export default function Cart() {
     }
   }
 
-  function proceedToCheckout() {
+  async function proceedToCheckout() {
     if (!cart || !cart.items || cart.items.length === 0) {
       showToast('warning', 'Your cart is empty', <AlertCircle />);
       return;
     }
-    // Navigate to booking page with cart items
-    navigate('/booking', { state: { cartItems: cart.items } });
+    
+    console.log('Cart items:', cart.items);
+    
+    // For single item, go directly to that hotel's booking page
+    if (cart.items.length === 1) {
+      const item = cart.items[0];
+      console.log('Navigating to booking for item:', item);
+      
+      if (!item.hotelId) {
+        showToast('error', 'Invalid hotel information', <XCircle />);
+        return;
+      }
+      
+      const queryParams = new URLSearchParams();
+      if (item.checkIn) queryParams.set('checkIn', item.checkIn);
+      if (item.checkOut) queryParams.set('checkOut', item.checkOut);
+      const url = `/booking/${item.hotelId}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      console.log('Navigation URL:', url);
+      navigate(url);
+    } else {
+      // For multiple items, process first one
+      showToast('info', 'Processing checkout...', <AlertCircle />);
+      const firstItem = cart.items[0];
+      
+      if (!firstItem.hotelId) {
+        showToast('error', 'Invalid hotel information', <XCircle />);
+        return;
+      }
+      
+      const queryParams = new URLSearchParams();
+      if (firstItem.checkIn) queryParams.set('checkIn', firstItem.checkIn);
+      if (firstItem.checkOut) queryParams.set('checkOut', firstItem.checkOut);
+      const url = `/booking/${firstItem.hotelId}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      console.log('Navigation URL:', url);
+      navigate(url);
+    }
   }
 
   if (!isSignedIn) {

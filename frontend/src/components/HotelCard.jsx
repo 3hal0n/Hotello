@@ -155,7 +155,7 @@ export default function HotelCard({ hotel }) {
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wide">From</p>
             <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ${hotel.pricePerNight}
+              LKR {hotel.pricePerNight?.toLocaleString()}
               <span className="text-sm text-gray-500 font-normal">/night</span>
             </p>
           </div>

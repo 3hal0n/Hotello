@@ -10,7 +10,7 @@ async function createPaymentIntent(amount, currency = 'lkr') {
 }
 
 // Create a Stripe Checkout session (hosted payment page)
-async function createCheckoutSession({amount, currency = 'usd', successUrl, cancelUrl, metadata = {}, productName = 'Booking'}) {
+async function createCheckoutSession({amount, currency = 'lkr', successUrl, cancelUrl, metadata = {}, productName = 'Booking'}) {
   return stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [

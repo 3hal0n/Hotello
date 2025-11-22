@@ -32,6 +32,19 @@ export default function Home() {
   const [rating, setRating] = useState('');
   const [sortBy, setSortBy] = useState('featured');
 
+  // Check for existing admin session on mount
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    const user = localStorage.getItem('adminUser');
+    if (token && user) {
+      setIsAdmin(true);
+      // Lazy load admin dashboard component
+      import('./AdminDashboard.jsx').then(mod => {
+        setAdminDashboardComp(() => mod.default);
+      });
+    }
+  }, []);
+
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE || ''}/api/hotels`)
       .then((r) => r.json())
@@ -267,10 +280,10 @@ export default function Home() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
                     >
                       <option value="">All Prices</option>
-                      <option value="0-10000">Under $100</option>
-                      <option value="10000-20000">$100 - $200</option>
-                      <option value="20000-30000">$200 - $300</option>
-                      <option value="30000+">$300+</option>
+                      <option value="0-10000">Under LKR 10,000</option>
+                      <option value="10000-20000">LKR 10,000 - 20,000</option>
+                      <option value="20000-30000">LKR 20,000 - 30,000</option>
+                      <option value="30000+">LKR 30,000+</option>
                     </select>
                   </div>
 

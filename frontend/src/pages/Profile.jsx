@@ -230,7 +230,7 @@ export default function Profile() {
                                 <div className="text-right">
                                   <p className="text-sm text-gray-500 mb-1">Total Price</p>
                                   <p className="text-3xl font-bold text-gray-900">
-                                    ${booking.totalAmount}
+                                    LKR {booking.totalAmount?.toLocaleString()}
                                   </p>
                                 </div>
                               </div>

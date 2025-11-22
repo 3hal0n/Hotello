@@ -42,7 +42,7 @@ async function createPaymentSession(req, res) {
 
     const session = await createCheckoutSession({
       amount: booking.totalAmount,
-      currency: 'usd',
+      currency: 'lkr',
       successUrl,
       cancelUrl,
       metadata: { bookingId: booking._id.toString() },

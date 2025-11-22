@@ -228,7 +228,7 @@ export default function Booking() {
                   >
                     {hotel.roomTypes && hotel.roomTypes.map((rt) => (
                       <option key={rt.type} value={rt.type}>
-                        {rt.type} - ${rt.price}/night ({rt.available} available)
+                        {rt.type} - LKR {rt.price.toLocaleString()}/night ({rt.available} available)
                       </option>
                     ))}
                   </select>
@@ -284,22 +284,22 @@ export default function Booking() {
                     <div className="flex justify-between text-gray-700">
                       <span>{roomType} Room</span>
                       <span>
-                        ${hotel.roomTypes?.find(rt => rt.type === roomType)?.price || hotel.pricePerNight}/night
+                        LKR {(hotel.roomTypes?.find(rt => rt.type === roomType)?.price || hotel.pricePerNight).toLocaleString()}/night
                       </span>
                     </div>
                     <div className="flex justify-between text-gray-700">
                       <span>
                         {nights} night{nights !== 1 ? 's' : ''} × {guests} guest{guests !== 1 ? 's' : ''}
                       </span>
-                      <span>${totalPrice}</span>
+                      <span>LKR {totalPrice.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-gray-700">
                       <span>Service fee</span>
-                      <span>$0</span>
+                      <span>LKR 0</span>
                     </div>
                     <div className="border-t border-blue-200 pt-3 flex justify-between items-center">
                       <span className="text-lg font-semibold">Total</span>
-                      <span className="text-2xl font-bold text-blue-600">${totalPrice}</span>
+                      <span className="text-2xl font-bold text-blue-600">LKR {totalPrice.toLocaleString()}</span>
                     </div>
                   </div>
                 )}
