@@ -17,6 +17,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   const [toast, setToast] = useState(null);
   const [showHotelModal, setShowHotelModal] = useState(false);
   const [editingHotel, setEditingHotel] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [hotelForm, setHotelForm] = useState({
     name: '',
     description: '',
@@ -209,6 +210,36 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
     setShowHotelModal(true);
   };
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploadingImage(true);
+    
+    Promise.all(
+      files.map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ url: reader.result });
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      })
+    )
+      .then(newImages => {
+        setHotelForm({
+          ...hotelForm,
+          images: [...hotelForm.images, ...newImages]
+        });
+        setUploadingImage(false);
+      })
+      .catch(err => {
+        console.error('Error uploading images:', err);
+        showToast('error', 'Failed to upload images', <XCircle />);
+        setUploadingImage(false);
+      });
+  };
+
   const addImageUrl = () => {
     const url = prompt('Enter image URL:');
     if (url && url.trim()) {
@@ -230,12 +261,18 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
     try {
       const amenitiesArray = hotelForm.amenities.split(',').map(a => a.trim()).filter(a => a);
       const hotelData = {
-        ...hotelForm,
+        name: hotelForm.name,
+        description: hotelForm.description,
+        location: hotelForm.location,
         pricePerNight: Number(hotelForm.pricePerNight),
         amenities: amenitiesArray,
-        images: hotelForm.images,
+        policies: hotelForm.policies,
+        rating: Number(hotelForm.rating),
+        images: hotelForm.images || [],
         ownerId: adminUser?.id || '507f1f77bcf86cd799439011' // Placeholder owner ID
       };
+      
+      console.log('Saving hotel with images:', hotelData.images.length, 'images');
 
       const url = editingHotel 
         ? `${API_BASE}/api/admin/hotels/${editingHotel._id}`
@@ -682,27 +719,52 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
-                <div className="space-y-2">
-                  {hotelForm.images.map((img, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded border">
-                      <img src={img.url || img} alt="Hotel" className="w-16 h-16 object-cover rounded" />
-                      <span className="flex-1 text-sm text-gray-600 truncate">{img.url || img}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
-                      >
-                        Remove
-                      </button>
+                <div className="space-y-3">
+                  {/* Image Preview Grid */}
+                  {hotelForm.images.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {hotelForm.images.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={img.url || img} 
+                            alt="Hotel" 
+                            className="w-full h-24 object-cover rounded border-2 border-gray-200" 
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addImageUrl}
-                    className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 text-gray-600 hover:text-blue-600"
-                  >
-                    + Add Image URL
-                  </button>
+                  )}
+                  
+                  {/* Upload Options */}
+                  <div className="flex gap-2">
+                    <label className="flex-1">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <div className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 text-gray-600 hover:text-blue-600 cursor-pointer text-center">
+                        {uploadingImage ? '⏳ Uploading...' : '📁 Upload Images'}
+                      </div>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={addImageUrl}
+                      className="flex-1 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 text-gray-600 hover:text-green-600"
+                    >
+                      🔗 Add URL
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500">Upload local images or add image URLs</p>
                 </div>
               </div>
             </div>

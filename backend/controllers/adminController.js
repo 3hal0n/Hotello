@@ -119,7 +119,7 @@ async function getDashboardStats(req, res) {
     const revenueData = await Bookings.aggregate([
       {
         $match: {
-          paymentStatus: { $in: ['paid', 'completed'] }
+          paymentStatus: 'paid'
         }
       },
       {
@@ -133,8 +133,12 @@ async function getDashboardStats(req, res) {
 
     const revenue = revenueData[0] || { totalRevenue: 0, avgBookingValue: 0 };
     
+    console.log('Revenue aggregation result:', revenueData);
+    console.log('Extracted revenue:', revenue);
+    
     // If no paid bookings, calculate from all bookings as fallback
     if (revenue.totalRevenue === 0 && totalBookings > 0) {
+      console.log('No paid bookings found, checking all bookings...');
       const allRevenueData = await Bookings.aggregate([
         {
           $group: {
@@ -144,9 +148,11 @@ async function getDashboardStats(req, res) {
           }
         }
       ]);
+      console.log('All bookings revenue:', allRevenueData);
       if (allRevenueData[0]) {
         revenue.totalRevenue = allRevenueData[0].totalRevenue;
         revenue.avgBookingValue = allRevenueData[0].avgBookingValue;
+        console.log('Using fallback revenue:', revenue.totalRevenue);
       }
     }
 
@@ -179,17 +185,21 @@ async function getDashboardStats(req, res) {
     
     console.log('===== END DASHBOARD STATS =====');
 
+    const responseData = {
+      totalHotels,
+      totalBookings,
+      totalUsers,
+      totalRevenue: revenue.totalRevenue || 0,
+      avgBookingValue: revenue.avgBookingValue || 0,
+      recentBookings,
+      topHotels
+    };
+    
+    console.log('Sending response with totalRevenue:', responseData.totalRevenue);
+    
     res.json({
       success: true,
-      data: {
-        totalHotels,
-        totalBookings,
-        totalUsers,
-        totalRevenue: revenue.totalRevenue,
-        avgBookingValue: revenue.avgBookingValue,
-        recentBookings,
-        topHotels
-      }
+      data: responseData
     });
   } catch (error) {
     console.error('Dashboard stats error:', error);
