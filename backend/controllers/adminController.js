@@ -115,8 +115,13 @@ async function getDashboardStats(req, res) {
         .lean()
     ]);
 
-    // Calculate revenue
+    // Calculate revenue - only from paid bookings
     const revenueData = await Bookings.aggregate([
+      {
+        $match: {
+          paymentStatus: { $in: ['paid', 'completed'] }
+        }
+      },
       {
         $group: {
           _id: null,
@@ -127,7 +132,25 @@ async function getDashboardStats(req, res) {
     ]);
 
     const revenue = revenueData[0] || { totalRevenue: 0, avgBookingValue: 0 };
+    
+    // If no paid bookings, calculate from all bookings as fallback
+    if (revenue.totalRevenue === 0 && totalBookings > 0) {
+      const allRevenueData = await Bookings.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: '$totalAmount' },
+            avgBookingValue: { $avg: '$totalAmount' }
+          }
+        }
+      ]);
+      if (allRevenueData[0]) {
+        revenue.totalRevenue = allRevenueData[0].totalRevenue;
+        revenue.avgBookingValue = allRevenueData[0].avgBookingValue;
+      }
+    }
 
+    console.log('===== DASHBOARD STATS =====');
     console.log('Dashboard stats computed:', {
       totalHotels,
       totalBookings,
@@ -141,13 +164,20 @@ async function getDashboardStats(req, res) {
       console.log('Sample recent booking:', {
         id: recentBookings[0]._id,
         totalAmount: recentBookings[0].totalAmount,
+        paymentStatus: recentBookings[0].paymentStatus,
         hotel: recentBookings[0].hotelId?.name
       });
+    } else {
+      console.log('⚠️ NO RECENT BOOKINGS FOUND IN DATABASE');
     }
     
     if (topHotels.length > 0) {
       console.log('Sample top hotel:', topHotels[0]);
+    } else {
+      console.log('⚠️ NO TOP HOTELS DATA (no bookings exist)');
     }
+    
+    console.log('===== END DASHBOARD STATS =====');
 
     res.json({
       success: true,
@@ -246,9 +276,19 @@ async function getAllBookings(req, res) {
       bookings.map(async (booking) => {
         const user = await Users.findOne({ clerkId: booking.userId }).lean();
         console.log(`Booking ${booking._id}: userId=${booking.userId}, found user:`, user ? user.name : 'NOT FOUND');
+        
+        // If user not in our DB, try to extract from Clerk ID or use placeholder
+        let userDetails = null;
+        if (user) {
+          userDetails = { name: user.name, email: user.email };
+        } else {
+          // Use userId as identifier if no user found
+          userDetails = { name: `User ${booking.userId.substring(0, 8)}`, email: booking.userId };
+        }
+        
         return {
           ...booking,
-          userDetails: user ? { name: user.name, email: user.email } : null
+          userDetails
         };
       })
     );
@@ -271,6 +311,11 @@ async function getAllUsers(req, res) {
     if (users.length > 0) {
       console.log('First user clerkId:', users[0].clerkId);
     }
+    
+    // First, get all unique userIds from bookings to understand what's in the DB
+    const allBookings = await Bookings.find().lean();
+    const uniqueUserIds = [...new Set(allBookings.map(b => b.userId))];
+    console.log('Unique userIds in bookings:', uniqueUserIds);
     
     const usersWithBookings = await Promise.all(
       users.map(async (user) => {

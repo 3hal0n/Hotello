@@ -24,7 +24,8 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
     pricePerNight: '',
     amenities: '',
     policies: '',
-    rating: 4.5
+    rating: 4.5,
+    images: []
   });
 
   useEffect(() => {
@@ -187,7 +188,8 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
       pricePerNight: '',
       amenities: '',
       policies: '',
-      rating: 4.5
+      rating: 4.5,
+      images: []
     });
     setShowHotelModal(true);
   };
@@ -201,9 +203,27 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
       pricePerNight: hotel.pricePerNight || '',
       amenities: Array.isArray(hotel.amenities) ? hotel.amenities.join(', ') : '',
       policies: hotel.policies || '',
-      rating: hotel.rating || 4.5
+      rating: hotel.rating || 4.5,
+      images: hotel.images || []
     });
     setShowHotelModal(true);
+  };
+
+  const addImageUrl = () => {
+    const url = prompt('Enter image URL:');
+    if (url && url.trim()) {
+      setHotelForm({
+        ...hotelForm,
+        images: [...hotelForm.images, { url: url.trim() }]
+      });
+    }
+  };
+
+  const removeImage = (index) => {
+    setHotelForm({
+      ...hotelForm,
+      images: hotelForm.images.filter((_, i) => i !== index)
+    });
   };
 
   const handleSaveHotel = async () => {
@@ -213,6 +233,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
         ...hotelForm,
         pricePerNight: Number(hotelForm.pricePerNight),
         amenities: amenitiesArray,
+        images: hotelForm.images,
         ownerId: adminUser?.id || '507f1f77bcf86cd799439011' // Placeholder owner ID
       };
 
@@ -251,12 +272,15 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
   })) || [];
   
   console.log('Revenue chart data:', revenueData);
+  console.log('Stats object:', stats);
+  console.log('Total revenue from stats:', stats?.totalRevenue);
 
   const hotelDistributionData = stats?.topHotels?.slice(0, 5).map((h) => ({
     name: h.name?.substring(0, 20) || 'Unknown', value: h.bookingCount || 0
   })) || [];
   
   console.log('Hotel distribution data:', hotelDistributionData);
+  console.log('Top hotels from stats:', stats?.topHotels);
 
   const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444'];
 
@@ -276,7 +300,7 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
     { title: 'Total Hotels', value: stats?.totalHotels || 0, color: 'from-blue-500 to-blue-600', icon: Hotel },
     { title: 'Total Bookings', value: stats?.totalBookings || 0, color: 'from-purple-500 to-purple-600', icon: Calendar },
     { title: 'Total Users', value: stats?.totalUsers || 0, color: 'from-green-500 to-green-600', icon: Users },
-    { title: 'Total Revenue', value: `$${stats?.totalRevenue?.toLocaleString() || 0}`, color: 'from-amber-500 to-amber-600', icon: DollarSign }
+    { title: 'Total Revenue', value: stats?.totalRevenue ? `$${stats.totalRevenue.toLocaleString()}` : '$0', color: 'from-amber-500 to-amber-600', icon: DollarSign }
   ];
 
   return (
@@ -486,7 +510,18 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                   {bookings.map((booking) => (
                     <tr key={booking._id} className="border-b hover:bg-gray-50">
                       <td className="py-3 px-4 font-mono text-sm">{booking._id.slice(-8)}</td>
-                      <td className="py-3 px-4">{booking.userDetails?.name || booking.userDetails?.email || 'N/A'}</td>
+                      <td className="py-3 px-4">
+                        {booking.userDetails ? (
+                          <div className="flex flex-col">
+                            <span className="font-medium">{booking.userDetails.name || 'Unknown'}</span>
+                            {booking.userDetails.email && (
+                              <span className="text-xs text-gray-500">{booking.userDetails.email}</span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">Guest User</span>
+                        )}
+                      </td>
                       <td className="py-3 px-4">{booking.hotelId?.name || 'N/A'}</td>
                       <td className="py-3 px-4">{new Date(booking.checkIn).toLocaleDateString()}</td>
                       <td className="py-3 px-4">{new Date(booking.checkOut).toLocaleDateString()}</td>
@@ -526,7 +561,11 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                       <td className="py-3 px-4">{user.email}</td>
                       <td className="py-3 px-4">{user.name || 'N/A'}</td>
                       <td className="py-3 px-4">{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td className="py-3 px-4">{user.bookingCount || 0}</td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 rounded ${user.bookingCount > 0 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                          {typeof user.bookingCount === 'number' ? user.bookingCount : 0}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -639,6 +678,32 @@ export default function AdminDashboard({ adminToken, adminUser, onLogout }) {
                   onChange={(e) => setHotelForm({ ...hotelForm, rating: e.target.value })}
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
+                <div className="space-y-2">
+                  {hotelForm.images.map((img, index) => (
+                    <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded border">
+                      <img src={img.url || img} alt="Hotel" className="w-16 h-16 object-cover rounded" />
+                      <span className="flex-1 text-sm text-gray-600 truncate">{img.url || img}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addImageUrl}
+                    className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 text-gray-600 hover:text-blue-600"
+                  >
+                    + Add Image URL
+                  </button>
+                </div>
               </div>
             </div>
 
