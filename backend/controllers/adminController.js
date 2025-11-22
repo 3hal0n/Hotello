@@ -65,10 +65,16 @@ async function login(req, res) {
 async function getDashboardStats(req, res) {
   try {
     // Get top hotels by booking count
+    const mongoose = require('mongoose');
     const topHotelsData = await Bookings.aggregate([
       {
+        $addFields: {
+          hotelObjectId: { $toObjectId: '$hotelId' }
+        }
+      },
+      {
         $group: {
-          _id: '$hotelId',
+          _id: '$hotelObjectId',
           bookingCount: { $sum: 1 }
         }
       },
@@ -116,6 +122,12 @@ async function getDashboardStats(req, res) {
     ]);
 
     // Calculate revenue - only from paid bookings
+    const paidBookingsCheck = await Bookings.find({ paymentStatus: 'paid' }).lean();
+    console.log('Paid bookings count:', paidBookingsCheck.length);
+    if (paidBookingsCheck.length > 0) {
+      console.log('Sample paid booking amounts:', paidBookingsCheck.slice(0, 3).map(b => b.totalAmount));
+    }
+    
     const revenueData = await Bookings.aggregate([
       {
         $match: {
@@ -126,7 +138,8 @@ async function getDashboardStats(req, res) {
         $group: {
           _id: null,
           totalRevenue: { $sum: '$totalAmount' },
-          avgBookingValue: { $avg: '$totalAmount' }
+          avgBookingValue: { $avg: '$totalAmount' },
+          count: { $sum: 1 }
         }
       }
     ]);
@@ -329,8 +342,17 @@ async function getAllUsers(req, res) {
     
     const usersWithBookings = await Promise.all(
       users.map(async (user) => {
+        // The bookings.userId field stores the clerkId from Clerk authentication
         const bookingCount = await Bookings.countDocuments({ userId: user.clerkId });
-        console.log(`User ${user.email}: clerkId=${user.clerkId}, bookings=${bookingCount}`);
+        console.log(`User ${user.email}: clerkId=${user.clerkId}, bookings found=${bookingCount}`);
+        
+        // Also check if userId matches _id as fallback
+        if (bookingCount === 0) {
+          const altCount = await Bookings.countDocuments({ userId: user._id.toString() });
+          console.log(`  Fallback check with _id: ${altCount} bookings`);
+          return { ...user, bookingCount: altCount };
+        }
+        
         return { ...user, bookingCount };
       })
     );

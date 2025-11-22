@@ -190,9 +190,49 @@ export default function HotelDetails() {
             Back to Hotels
           </button>
 
+          {/* Hotel Header - Above Everything */}
+          <div className="mb-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{hotel.name}</h1>
+                <div className="flex items-center text-gray-600 text-base">
+                  <MapPin className="w-4 h-4 mr-2 text-blue-600" />
+                  {hotel.location}
+                </div>
+              </div>
+              {hotel.rating > 0 && (
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center bg-blue-600 text-white px-3 py-1.5 rounded-lg shadow-lg">
+                    <Star className="w-4 h-4 mr-1 fill-current" />
+                    <span className="text-xl font-bold">{hotel.rating.toFixed(1)}</span>
+                  </div>
+                  <span className="text-xs text-gray-500 mt-1">Excellent</span>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Stats */}
+            <div className="flex flex-wrap gap-3 mt-4">
+              <div className="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-lg">
+                <Shield className="w-4 h-4 text-green-600" />
+                <span className="text-xs font-medium text-green-700">Verified Property</span>
+              </div>
+              <div className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg">
+                <Award className="w-4 h-4 text-purple-600" />
+                <span className="text-xs font-medium text-purple-700">Premium Hotel</span>
+              </div>
+              {hotel.roomTypes && hotel.roomTypes.length > 0 && (
+                <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg">
+                  <Users className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs font-medium text-blue-700">{hotel.roomTypes.length} Room Types</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-            {/* Advanced Image Gallery */}
-            <div className="p-6">
+            {/* Image Gallery */}
+            <div className="p-4">
               <ImageGallery images={hotel.images || []} hotelName={hotel.name} />
             </div>
 
@@ -201,45 +241,6 @@ export default function HotelDetails() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column - Hotel Info */}
                 <div className="lg:col-span-2 space-y-8">
-                  {/* Header */}
-                  <div className="border-b border-gray-200 pb-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">{hotel.name}</h1>
-                        <div className="flex items-center text-gray-600 text-lg">
-                          <MapPin className="w-5 h-5 mr-2 text-blue-600" />
-                          {hotel.location}
-                        </div>
-                      </div>
-                      {hotel.rating > 0 && (
-                        <div className="flex flex-col items-end">
-                          <div className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl shadow-lg">
-                            <Star className="w-5 h-5 mr-1 fill-current" />
-                            <span className="text-2xl font-bold">{hotel.rating.toFixed(1)}</span>
-                          </div>
-                          <span className="text-sm text-gray-500 mt-1">Excellent</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Quick Stats */}
-                    <div className="flex flex-wrap gap-4 mt-6">
-                      <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg">
-                        <Shield className="w-5 h-5 text-green-600" />
-                        <span className="text-sm font-medium text-green-700">Verified Property</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-purple-50 px-4 py-2 rounded-lg">
-                        <Award className="w-5 h-5 text-purple-600" />
-                        <span className="text-sm font-medium text-purple-700">Premium Hotel</span>
-                      </div>
-                      {hotel.roomTypes && hotel.roomTypes.length > 0 && (
-                        <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
-                          <Users className="w-5 h-5 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-700">{hotel.roomTypes.length} Room Types</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
                   {/* About Section */}
                   <div>
