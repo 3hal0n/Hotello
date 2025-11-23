@@ -237,9 +237,9 @@ export default function Home() {
                       <button
                         key={emotion.label}
                         onClick={async () => {
-                          setSearchQuery(emotion.query);
-                          // Call AI recommendations API
+                          // Call AI recommendations API (don't set searchQuery to avoid re-filtering)
                           try {
+                            setLoading(true);
                             const API_BASE = import.meta.env.VITE_API_BASE || '';
                             const response = await fetch(`${API_BASE}/api/recommendations`, {
                               method: 'POST',
@@ -247,15 +247,20 @@ export default function Home() {
                               body: JSON.stringify({ query: emotion.query })
                             });
                             const data = await response.json();
-                            if (data.success && data.data) {
+                            if (data.success && data.data && data.data.length > 0) {
                               setAllHotels(data.data);
                               setHotels(data.data);
+                              setSearchQuery(''); // Clear search to prevent re-filtering
                               console.log('✅ AI emotion search returned', data.data.length, 'hotels', data.aiUsed ? '(AI-powered)' : '(keyword fallback)');
+                            } else {
+                              console.warn('No hotels returned from AI');
+                              setSearchQuery(emotion.label); // Fallback to keyword search
                             }
+                            setLoading(false);
                           } catch (error) {
                             console.error('AI emotion search error:', error);
-                            // Fallback to text search
-                            setSearchQuery(emotion.query);
+                            setSearchQuery(emotion.label); // Fallback to keyword search
+                            setLoading(false);
                           }
                         }}
                         className="group px-4 py-2 rounded-full bg-white border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all hover:scale-105 shadow-sm"
