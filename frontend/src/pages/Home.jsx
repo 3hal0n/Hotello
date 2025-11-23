@@ -227,16 +227,37 @@ export default function Home() {
                   <p className="text-xs text-gray-600 mb-3">Find hotels that match your mood and preferences</p>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      { emoji: "😌", label: "Relaxing", query: "peaceful relaxing spa wellness quiet serene" },
-                      { emoji: "🎉", label: "Exciting", query: "vibrant nightlife entertainment activities adventure" },
-                      { emoji: "💑", label: "Romantic", query: "romantic couples intimate cozy candlelit" },
-                      { emoji: "👨‍👩‍👧‍👦", label: "Family", query: "family kids children playground activities pool" },
-                      { emoji: "💼", label: "Business", query: "business conference meeting workspace professional" },
-                      { emoji: "🏖️", label: "Beach", query: "beach ocean seaside coastal beachfront" },
+                      { emoji: "😌", label: "Relaxing", query: "I want a peaceful and relaxing hotel with spa and wellness facilities in a quiet serene location" },
+                      { emoji: "🎉", label: "Exciting", query: "Looking for vibrant hotels with nightlife, entertainment, and adventure activities" },
+                      { emoji: "💑", label: "Romantic", query: "Need a romantic intimate hotel perfect for couples with cozy candlelit ambiance" },
+                      { emoji: "👨‍👩‍👧‍👦", label: "Family", query: "Family-friendly hotel with kids activities, children playground and pool" },
+                      { emoji: "💼", label: "Business", query: "Professional business hotel with conference rooms, meeting spaces and workspace" },
+                      { emoji: "🏖️", label: "Beach", query: "Beautiful beachfront hotel near ocean with seaside coastal views" },
                     ].map((emotion) => (
                       <button
                         key={emotion.label}
-                        onClick={() => setSearchQuery(emotion.query)}
+                        onClick={async () => {
+                          setSearchQuery(emotion.query);
+                          // Call AI recommendations API
+                          try {
+                            const API_BASE = import.meta.env.VITE_API_BASE || '';
+                            const response = await fetch(`${API_BASE}/api/recommendations`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ query: emotion.query })
+                            });
+                            const data = await response.json();
+                            if (data.success && data.data) {
+                              setAllHotels(data.data);
+                              setHotels(data.data);
+                              console.log('✅ AI emotion search returned', data.data.length, 'hotels', data.aiUsed ? '(AI-powered)' : '(keyword fallback)');
+                            }
+                          } catch (error) {
+                            console.error('AI emotion search error:', error);
+                            // Fallback to text search
+                            setSearchQuery(emotion.query);
+                          }
+                        }}
                         className="group px-4 py-2 rounded-full bg-white border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all hover:scale-105 shadow-sm"
                       >
                         <span className="text-lg mr-1">{emotion.emoji}</span>
