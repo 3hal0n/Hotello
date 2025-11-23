@@ -40,25 +40,33 @@ async function getRecommendations(req, res) {
     const hotelSummaries = hotels.map(h => ({
       name: h.name,
       location: h.location,
-      description: h.description?.substring(0, 100),
-      amenities: h.amenities?.slice(0, 5).join(', ')
+      description: h.description || '',
+      amenities: h.amenities || [],
+      pricePerNight: h.pricePerNight,
+      rating: h.rating
     }));
 
-    const prompt = `You are an expert hotel recommendation AI for Sri Lanka. Analyze the user's query and match it with the best hotels.
+    const prompt = `You are an expert Sri Lankan hotel recommendation AI. Match hotels to this query: "${query}"
 
-Available hotels:
-${hotelSummaries.map((h, i) => `${i+1}. ${h.name} in ${h.location} - ${h.description}\nAmenities: ${h.amenities}`).join('\n\n')}
+Hotels Database (${hotels.length} hotels):
+${hotelSummaries.map((h, i) => `${i+1}. ${h.name}
+   Location: ${h.location}
+   Price: $${h.pricePerNight}/night
+   Rating: ${h.rating || 4.5}⭐
+   Amenities: ${h.amenities.join(', ')}
+   Description: ${h.description.substring(0, 150)}`).join('\n\n')}
 
-User query: "${query}"
+MATCHING RULES:
+- Relaxing/Spa → Hotels with "Spa", "Wellness", "Pool" in amenities, peaceful locations (Bentota, Kandy, Nuwara Eliya)
+- Beach/Coastal → Hotels in Unawatuna, Mirissa, Bentota, Tangalle, Negombo with "Beach Access"
+- Romantic/Couples → Boutique hotels with "Beach", "Spa", "Fine Dining", quiet locations
+- Family → Hotels with "Pool", "Kids Club", larger properties, family-friendly locations
+- Business → Hotels in Colombo with "Conference", "WiFi", "Business Center"
+- Exciting/Adventure → Hotels near Yala, Arugam Bay, Ella with "Safari", "Water Sports"
+- Luxury → 5-star hotels with price >$200, premium amenities
 
-Analyze the emotional tone, preferences, and requirements in the query. Consider:
-- Mood and atmosphere (relaxing, exciting, romantic, family-friendly, business)
-- Location preferences and activities
-- Amenities that match the query
-- Price and luxury level implied by the query
-
-Return a JSON array of hotel names that best match (max 6 hotels, ordered by relevance).
-Return ONLY the JSON array, nothing else. Example format: ["Hotel Name 1", "Hotel Name 2"]`;
+Return ONLY a JSON array of hotel names (max 6, most relevant first):
+["Hotel Name 1", "Hotel Name 2"]`;
 
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-pro' });

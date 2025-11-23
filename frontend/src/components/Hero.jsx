@@ -31,15 +31,18 @@ const Hero = ({ onEmotionSearch }) => {
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
+      {/* Preload critical hero image for faster LCP */}
+      <link rel="preload" as="image" href="/bg-hero.jpg" fetchpriority="high" />
+      
       {/* Background Image - Extends to top */}
       <div className="absolute inset-0 top-0">
-        <div
-          className="absolute inset-0 bg-cover bg-top"
-          style={{
-            backgroundImage: `url(/bg-hero.jpg)`,
-            backgroundPosition: 'top center',
-            backgroundSize: 'cover',
-          }}
+        <img
+          src="/bg-hero.jpg"
+          alt="Sri Lanka hotels background"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
         />
         {/* Dark Overlay - reduced opacity so sky is more visible */}
         <div className="absolute inset-0 bg-black/20" />
