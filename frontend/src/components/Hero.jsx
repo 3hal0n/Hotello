@@ -34,7 +34,7 @@ const Hero = () => {
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Preload critical hero image for faster LCP */}
-      <link rel="preload" as="image" href="/bg-hero.webp" fetchpriority="high" />
+      <link rel="preload" as="image" href="/bg-hero.webp" fetchPriority="high" />
       
       {/* Background Image - Extends to top */}
       <div className="absolute inset-0 top-0">
@@ -43,7 +43,7 @@ const Hero = () => {
           alt="Sri Lanka hotels background"
           className="absolute inset-0 w-full h-full object-cover object-top"
           loading="eager"
-          fetchpriority="high"
+          fetchPriority="high"
           decoding="async"
         />
         {/* Dark Overlay - reduced opacity so sky is more visible */}

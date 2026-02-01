@@ -229,11 +229,8 @@ npm install
 - Glassmorphism UI effects
 - Smooth animations & transitions
 - Loading and empty states
-
-### In Progress
 - Payment integration with Stripe
-- Email notifications
-- Hotel reviews system
+- Admin?
 
 ### To Do
 - Whatsapp bot

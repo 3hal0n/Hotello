@@ -93,6 +93,8 @@ export default function HotelCard({ hotel }) {
             src={imgSrc}
             onError={handleImgError}
             alt={hotel.name}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (

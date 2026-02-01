@@ -3,11 +3,11 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
 import Hero from '../components/Hero';
-import HotelMap from '../components/HotelMap';
+const HotelMap = React.lazy(() => import('../components/HotelMap'));
 import AdminLayout from './AdminLayout';
 import FeaturesSection from '../components/FeaturesSection';
 import Pagination from '../components/Pagination';
-import { AIChatbot } from '../components/AIChatbot';
+const AIChatbot = React.lazy(() => import('../components/AIChatbot').then(mod => ({ default: mod.AIChatbot })));
 import { Sparkles, MapPin, Filter, Star, Quote } from 'lucide-react';
 import { mockHotels } from '../data/mockHotels';
 
@@ -496,14 +496,16 @@ export default function Home() {
                   >
                     {/* Image */}
                     <div className="relative h-64 overflow-hidden">
-                      <img
-                        src={destination.image}
-                        alt={destination.city}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400';
-                        }}
-                      />
+                        <img
+                          src={destination.image}
+                          alt={destination.city}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400';
+                          }}
+                        />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                     </div>
 
@@ -582,6 +584,8 @@ export default function Home() {
                         <img
                           src={review.image}
                           alt={review.name}
+                          loading="lazy"
+                          decoding="async"
                           className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
                         />
                         <div className="text-white">
@@ -667,8 +671,10 @@ export default function Home() {
             </div>
           )}
           
-          {/* AI Chatbot */}
-          <AIChatbot />
+          {/* AI Chatbot (lazy-loaded) */}
+          <React.Suspense fallback={null}>
+            <AIChatbot />
+          </React.Suspense>
           
           <Footer />
         </>
