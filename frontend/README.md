@@ -10,3 +10,17 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+---
+
+## SEO Updates
+
+The frontend now includes several SEO improvements to improve discoverability and preview cards:
+
+- Comprehensive meta tags are included in `frontend/index.html` (title, description, keywords, canonical).
+- Open Graph and Twitter Card tags are present for improved social sharing.
+- JSON-LD structured data (TravelAgency and WebSite schemas) included in `frontend/index.html`.
+- Dynamic per-route SEO via `frontend/src/components/SEO.jsx` updates `document.title` and key meta tags on route change.
+- Public assets added: `robots.txt`, `sitemap.xml`, and `site.webmanifest`.
+
+If you deploy to a new domain, update canonical URLs and sitemap entries accordingly.
