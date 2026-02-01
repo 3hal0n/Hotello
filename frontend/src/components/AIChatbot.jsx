@@ -56,19 +56,19 @@ export const AIChatbot = () => {
       {/* Chat Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-8 right-8 z-50 group"
+        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 group"
       >
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full opacity-50 blur-xl group-hover:opacity-75 transition-opacity animate-pulse"></div>
-          <div className="relative w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-110">
-            <Bot className="w-8 h-8 text-white" />
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-110">
+            <Bot className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
         </div>
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-28 right-8 z-50 w-96 h-[500px] bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-16 inset-x-3 sm:right-8 sm:left-auto z-50 w-auto sm:w-96 h-[48vh] sm:h-[500px] bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-purple-600">
             <div className="flex items-center gap-3">
@@ -76,8 +76,8 @@ export const AIChatbot = () => {
                 <Bot className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">AI Assistant</h3>
-                <p className="text-xs text-blue-100">Always here to help</p>
+                  <h3 className="font-semibold text-white text-sm sm:text-base">AI Assistant</h3>
+                  <p className="text-xs sm:text-sm text-blue-100">Always here to help</p>
               </div>
             </div>
             <button
@@ -97,7 +97,7 @@ export const AIChatbot = () => {
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${
+                    className={`max-w-[90%] sm:max-w-[80%] p-2 sm:p-3 rounded-2xl ${
                       msg.role === "user"
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
                         : "bg-white text-gray-800 border border-gray-200 shadow-sm"
@@ -109,7 +109,7 @@ export const AIChatbot = () => {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white text-gray-800 border border-gray-200 shadow-sm p-3 rounded-2xl">
+                  <div className="bg-white text-gray-800 border border-gray-200 shadow-sm p-2 sm:p-3 rounded-2xl">
                     <div className="flex gap-1">
                       <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                       <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -122,7 +122,7 @@ export const AIChatbot = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-gray-200 bg-white">
+          <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -131,12 +131,12 @@ export const AIChatbot = () => {
                 onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
                 placeholder="Ask me anything..."
                 disabled={loading}
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50"
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 sm:px-4 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50"
               />
               <button
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-lg transition-all rounded-xl p-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-lg transition-all rounded-xl p-2 sm:p-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="w-4 h-4 text-white" />
               </button>
