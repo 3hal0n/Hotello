@@ -24,9 +24,19 @@ const Hero = ({ onEmotionSearch }) => {
 
   useEffect(() => {
     // gentle floating animation for the watermark using GSAP
-    if (watermarkRef.current) {
-      gsap.to(watermarkRef.current, { y: -18, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    if (!watermarkRef.current) return;
+
+    // Disable vertical float on small screens to keep watermark static
+    const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+    if (isMobile) {
+      gsap.set(watermarkRef.current, { y: 0 });
+      return;
     }
+
+    const anim = gsap.to(watermarkRef.current, { y: -18, duration: 6, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    return () => {
+      if (anim) anim.kill();
+    };
   }, []);
 
   return (
@@ -51,8 +61,8 @@ const Hero = ({ onEmotionSearch }) => {
       {/* Content: align left-bottom so headline + CTAs appear in left bottom of hero */}
       <div className="relative z-10 flex h-full flex-col items-start justify-end px-4 text-left">
         {/* Large Hotello Text Overlay - Positioned to the right in sky area like StayGo */}
-        <div className="absolute top-20 right-0 left-0 flex items-start justify-end pr-8 md:pr-16 lg:pr-24 pointer-events-none">
-          <motion.h1 ref={watermarkRef} className="hero-title-overlay text-right" initial={{ opacity: 0.95, y: 0 }} animate={{ opacity: 0.95 }} transition={{ duration: 1 }}>
+        <div className="absolute top-28 sm:top-20 right-0 left-0 flex items-start justify-center sm:justify-end pr-4 sm:pr-8 md:pr-16 lg:pr-24 pointer-events-none">
+          <motion.h1 ref={watermarkRef} className="hero-title-overlay text-center sm:text-right" initial={{ opacity: 0.95, y: 0 }} animate={{ opacity: 0.95 }} transition={{ duration: 1 }}>
             Hotello
           </motion.h1>
         </div>

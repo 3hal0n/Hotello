@@ -13,6 +13,7 @@ import Wishlist from './pages/Wishlist.jsx';
 import Chat from './pages/Chat.jsx';
 import MapView from './pages/MapView.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
+import { ReactLenis } from 'lenis/react';
 
 export default function App() {
   return (
@@ -22,8 +23,10 @@ export default function App() {
         v7_relativeSplatPath: true,
       }}
     >
-      {/* ...existing code... (Navbar is rendered elsewhere) */}
-      <Routes>
+      {/* Wrap routes with ReactLenis for smooth scrolling */}
+      <ReactLenis>
+        {/* ...existing code... (Navbar is rendered elsewhere) */}
+        <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/hotels' element={<Hotels />} />
         <Route path='/hotels/:id' element={<HotelDetails />} />
@@ -36,7 +39,8 @@ export default function App() {
         <Route path='/about' element={<About />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/profile' element={<Profile />} />
-      </Routes>
+        </Routes>
+      </ReactLenis>
     </BrowserRouter>
   );
 }
