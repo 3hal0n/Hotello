@@ -42,9 +42,9 @@ export default function About() {
   const team = [
     {
       name: 'Shalon',
-      role: 'CEO & CTO',
+      role: 'Designed by Shalon',
       image: 'assets/img/shalon.png',
-      bio: 'Visionary leader & technology innovator driving Hotello forward'
+      bio: 'Built by Shalon'
     }
   ];
 

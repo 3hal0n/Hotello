@@ -145,11 +145,11 @@ export default function Chat() {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Sidebar - desktop only */}
             <aside className="hidden md:flex md:flex-col w-72 bg-gray-50 rounded-2xl p-4 shadow-sm border border-gray-100">
-              <motion.button whileHover={{ scale: 1.02 }} onClick={() => { setMessages([{ role: 'assistant', text: "👋 Hello! I'm your AI travel assistant. I can help you find the perfect hotel, answer questions about destinations, provide local tips, and make personalized recommendations. How can I assist you today?" }]); }} className="w-full px-3 py-2 bg-white rounded-lg border border-gray-200 text-sm font-medium hover:shadow transition">+ New chat</motion.button>
+              <button onClick={() => { setMessages([{ role: 'assistant', text: "👋 Hello! I'm your AI travel assistant. I can help you find the perfect hotel, answer questions about destinations, provide local tips, and make personalized recommendations. How can I assist you today?" }]); }} className="w-full px-3 py-2 bg-white rounded-lg border border-gray-200 text-sm font-medium hover:shadow transition hover:scale-105">+ New chat</button>
               <div className="mt-4 text-xs text-gray-500">Conversations</div>
               <div className="mt-3 overflow-y-auto flex-1 space-y-2">
                 {messages.slice(0,5).map((m, i) => (
-                  <motion.div key={i} whileHover={{ scale: 1.01 }} className="px-3 py-2 bg-white rounded-lg border border-gray-100 text-sm text-gray-700 shadow-sm cursor-pointer">{m.text.slice(0,60)}{m.text.length>60? '...' : ''}</motion.div>
+                  <div key={i} className="px-3 py-2 bg-white rounded-lg border border-gray-100 text-sm text-gray-700 shadow-sm cursor-pointer hover:scale-102 transition-transform">{m.text.slice(0,60)}{m.text.length>60? '...' : ''}</div>
                 ))}
               </div>
             </aside>
@@ -161,13 +161,10 @@ export default function Chat() {
                 <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-gray-50/50 to-white" role="log" aria-live="polite">
                   {messages.map((m, i) => {
                     // If the assistant returned a hotels array, render a hotel-card grid inside the message
-                    if (m.hotels && Array.isArray(m.hotels)) {
+                      if (m.hotels && Array.isArray(m.hotels)) {
                       return (
-                        <motion.div
+                        <div
                           key={i}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.28, delay: i * 0.03 }}
                           className={`flex gap-4 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                         >
                           <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
@@ -191,16 +188,13 @@ export default function Chat() {
                               ))}
                             </div>
                           </div>
-                        </motion.div>
+                        </div>
                       );
                     }
 
                     return (
-                      <motion.div
+                      <div
                         key={i}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.28, delay: i * 0.03 }}
                         className={`flex gap-4 items-end ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                       >
                         <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
@@ -216,20 +210,20 @@ export default function Chat() {
                         </div>
 
                         <div className={`flex-1 max-w-3xl ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
-                          <motion.div whileHover={{ scale: 1.01 }} className={`relative inline-block px-6 py-4 rounded-2xl ${
+                          <div className={`relative inline-block px-6 py-4 rounded-2xl ${
                             m.role === 'user'
-                              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                              : 'bg-gray-50 border border-gray-100 text-gray-900'
+                              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-transform'
+                              : 'bg-gray-50 border border-gray-100 text-gray-900 hover:scale-102 transition-transform'
                           }`}>
                             <p className="text-base leading-relaxed whitespace-pre-wrap">
                               {m.text}
                             </p>
-                          </motion.div>
+                          </div>
                           <p className="text-xs text-gray-400 mt-2 px-2">
                             {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
 
@@ -256,14 +250,13 @@ export default function Chat() {
                     <p className="text-sm font-semibold text-gray-700 mb-3">💡 Try asking:</p>
                     <div className="flex flex-wrap gap-2">
                       {suggestedQuestions.map((question, idx) => (
-                        <motion.button
+                        <button
                           key={idx}
                           onClick={() => setInput(question)}
-                          whileHover={{ scale: 1.03 }}
-                          className="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow"
+                          className="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow hover:scale-105"
                         >
                           {question}
-                        </motion.button>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -287,12 +280,10 @@ export default function Chat() {
                       />
                     </div>
 
-                    <motion.button
+                    <button
                       type="submit"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                       disabled={loading || !input.trim() || !isSignedIn}
-                      className="px-5 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center gap-2"
+                      className="px-5 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center gap-2 hover:scale-105 active:scale-95"
                     >
                       {loading ? (
                         <>
@@ -305,7 +296,7 @@ export default function Chat() {
                           <span className="hidden sm:inline">Send</span>
                         </>
                       )}
-                    </motion.button>
+                    </button>
                   </div>
 
                   {!isSignedIn && (
