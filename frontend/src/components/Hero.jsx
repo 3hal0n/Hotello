@@ -42,12 +42,12 @@ const Hero = ({ onEmotionSearch }) => {
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Preload critical hero image for faster LCP */}
-      <link rel="preload" as="image" href="/bg-hero.jpg" fetchpriority="high" />
+      <link rel="preload" as="image" href="/bg-hero.webp" fetchpriority="high" />
       
       {/* Background Image - Extends to top */}
       <div className="absolute inset-0 top-0">
         <img
-          src="/bg-hero.jpg"
+          src="/bg-hero.webp"
           alt="Sri Lanka hotels background"
           className="absolute inset-0 w-full h-full object-cover object-top"
           loading="eager"
