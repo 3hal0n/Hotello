@@ -75,6 +75,13 @@ export default function MapView() {
     }
   };
 
+  const getHotelImageSrc = (hotel) => {
+    const first = hotel?.images?.[0];
+    // support arrays of strings or objects with `url`/`secure_url`
+    if (!first) return '/hotel-placeholder.jpg';
+    if (typeof first === 'string') return first;
+    return first.url || first.secure_url || first.publicUrl || '/hotel-placeholder.jpg';
+  };
   const navigateToHotel = (hotelId) => {
     navigate(`/hotels/${hotelId}`);
   };
@@ -150,8 +157,11 @@ export default function MapView() {
                       <div className="flex gap-3">
                         <div className="relative flex-shrink-0">
                           <img
-                            src={hotel.images?.[0] || '/hotel-placeholder.jpg'}
+                            src={getHotelImageSrc(hotel)}
                             alt={hotel.name}
+                            loading="lazy"
+                            decoding="async"
+                            onError={(e) => { e.currentTarget.src = '/hotel-placeholder.jpg'; }}
                             className="w-24 h-20 object-cover rounded-lg"
                           />
                           {!hasGeo && (
@@ -202,8 +212,11 @@ export default function MapView() {
                   <div className="absolute bottom-6 left-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-md border-2 border-blue-500">
                     <div className="flex gap-4">
                       <img
-                        src={selectedHotel.images?.[0] || '/hotel-placeholder.jpg'}
+                        src={getHotelImageSrc(selectedHotel)}
                         alt={selectedHotel.name}
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => { e.currentTarget.src = '/hotel-placeholder.jpg'; }}
                         className="w-28 h-28 object-cover rounded-lg flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
