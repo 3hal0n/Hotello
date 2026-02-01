@@ -12,7 +12,7 @@ export default function Booking() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { getToken, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
   const api = useApi();
   
   const [hotel, setHotel] = useState(null);

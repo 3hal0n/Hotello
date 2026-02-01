@@ -1,0 +1,16 @@
+# Exclude third-party vendor files and minified scripts
+src/assets/js/**/*.js
+src/assets/js/**/*.min.js
+
+# Exclude build output
+dist/
+build/
+
+# Exclude node_modules (usually ignored by default)
+node_modules/
+
+# Exclude coverage reports
+coverage/
+
+# Exclude old/backup files
+**/*_OLD.*

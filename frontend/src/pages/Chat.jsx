@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Toast from '../components/Toast';
@@ -105,14 +104,14 @@ export default function Chat() {
   };
 
   // copy message text to clipboard
-  const copyToClipboard = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast('success', 'Copied to clipboard', null);
-    } catch (err) {
-      showToast('error', 'Unable to copy', null);
-    }
-  };
+  // const copyToClipboard = async (text) => {
+  //   try {
+  //     await navigator.clipboard.writeText(text);
+  //     showToast('success', 'Copied to clipboard', null);
+  //   } catch {
+  //     showToast('error', 'Unable to copy', null);
+  //   }
+  // };
 
   const suggestedQuestions = [
     '🏖️ Best beachfront hotels in Sri Lanka',

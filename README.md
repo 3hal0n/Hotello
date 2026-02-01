@@ -1,12 +1,12 @@
 # Hotello - Quick Start Guide
 
-## 🚀 Deployment Status (Updated Nov 8, 2025)
+## Deployment Status (Updated Nov 8, 2025)
 
 - Frontend: https://hotello-ebon.vercel.app (Vercel)
-- Backend:  https://hotello-oq0q.onrender.com (Render)
+- Backend: https://hotello-oq0q.onrender.com (Render)
 
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ installed
@@ -15,7 +15,7 @@
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### 1. Clone & Install Dependencies
 
@@ -34,7 +34,7 @@ npm install
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Backend Setup
 
@@ -73,7 +73,7 @@ VITE_API_URL=http://localhost:3001
 
 ---
 
-## ▶️ Running the Application
+## Running the Application
 
 ### Option 1: Run Both Servers (Recommended)
 
@@ -101,14 +101,14 @@ npm run dev
 
 ---
 
-## 🌐 Access the Application
+## Access the Application
 
-1. **Frontend**: http://localhost:5173
-2. **Backend API**: http://localhost:3001/api
+1. Frontend: http://localhost:5173
+2. Backend API: http://localhost:3001/api
 
 ---
 
-## 📱 Available Pages
+## Available Pages
 
 | Route | Page | Description |
 |-------|------|-------------|
@@ -122,7 +122,7 @@ npm run dev
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Backend Tests
 ```powershell
@@ -138,11 +138,11 @@ npm test
 
 ---
 
-## 🔑 Clerk Authentication Setup
+## Clerk Authentication Setup
 
-1. Go to [Clerk Dashboard](https://dashboard.clerk.com/)
+1. Go to https://dashboard.clerk.com/
 2. Create a new application
-3. Copy your **Publishable Key** and **Secret Key**
+3. Copy your Publishable Key and Secret Key
 4. Add to `.env` files (both frontend and backend)
 5. Configure allowed redirect URLs:
    - Development: `http://localhost:5173`
@@ -150,22 +150,22 @@ npm test
 
 ---
 
-## 🎨 UI Components
+## UI Components
 
 ### Custom Components Created:
-- ✅ `Button` - CVA-based button with variants
-- ✅ `Input` - Styled input component
-- ✅ `Hero` - Carousel with AI search
-- ✅ `HotelCard` - Card with glare effect
-- ✅ `Navbar` - Responsive navigation
-- ✅ `Footer` - Site footer
+- `Button` - CVA-based button with variants
+- `Input` - Styled input component
+- `Hero` - Carousel with AI search
+- `HotelCard` - Card with glare effect
+- `Navbar` - Responsive navigation
+- `Footer` - Site footer
 
 ### Utility Functions:
-- ✅ `cn()` - ClassName merger (clsx + tailwind-merge)
+- `cn()` - ClassName merger (clsx + tailwind-merge)
 
 ---
 
-## 📋 API Endpoints
+## API Endpoints
 
 ### Hotels
 - `GET /api/hotels` - Get all hotels
@@ -186,29 +186,29 @@ npm test
 
 ---
 
-## 🐛 Common Issues & Solutions
+## Common Issues & Solutions
 
 ### Issue 1: "Cannot connect to MongoDB"
-**Solution**: Ensure MongoDB is running
+Solution: Ensure MongoDB is running
 ```powershell
 # Start MongoDB service
 net start MongoDB
 ```
 
 ### Issue 2: "Clerk authentication not working"
-**Solution**: 
+Solution:
 1. Check `.env` files have correct keys
 2. Verify Clerk application is active
 3. Clear browser cache and cookies
 
 ### Issue 3: "Port already in use"
-**Solution**: Change port in backend `.env`:
+Solution: Change port in backend `.env`:
 ```env
 PORT=3002
 ```
 
 ### Issue 4: "Module not found"
-**Solution**: Reinstall dependencies
+Solution: Reinstall dependencies
 ```powershell
 rm -rf node_modules
 npm install
@@ -216,9 +216,9 @@ npm install
 
 ---
 
-## 🎯 Features Implemented
+## Features Implemented
 
-### ✅ Completed
+### Completed
 - Modern Hero section with carousel
 - AI-powered dual search (Destination/Emotion)
 - Advanced hotel filtering & sorting
@@ -230,21 +230,17 @@ npm install
 - Smooth animations & transitions
 - Loading and empty states
 
-### 🔄 In Progress
+### In Progress
 - Payment integration with Stripe
 - Email notifications
 - Hotel reviews system
 
-### 📝 To Do
-- Admin dashboard
-- Advanced analytics
-- Multi-language support
-- Dark mode
-- PWA functionality
+### To Do
+- Whatsapp bot
 
 ---
 
-## � CI / Deployment
+## CI / Deployment
 
 This repository includes CI workflows that validate the frontend and backend on push and pull-request. Deployment is expected to be handled by managed platforms (Vercel / Netlify for the frontend and Render / Railway for the backend).
 
@@ -271,7 +267,7 @@ Frontend workflow badge:
 
 Backend workflow badge:
 
-`![Backend CI](https://github.com/3hal0n/Hotello/actions/workflows/backend-ci.yml/badge.svg)`
+`![Backend CI](https://github.com/3hal0n/Hotello/actions/workflows/frontend-ci.yml/badge.svg)`
 
 Security scan badge:
 
@@ -295,16 +291,11 @@ Deploy trigger badge:
 
 If you want me to wire up deployments via the Actions (e.g., automatic deploy to Render via API or push to GitHub Container Registry), I can add those steps — otherwise, using the provider integrations is simpler and recommended.
 
-## �📚 Documentation
 
-- **Frontend Complete Guide**: `docs/FRONTEND_COMPLETE.md`
-- **Hero Section**: `docs/NEW_HERO_SECTION.md`
-- **Advanced UI Components**: `docs/ADVANCED_UI_COMPONENTS.md`
-- **Postman Tests**: `backend/tests/README_Postman.md`
 
 ---
 
-## 🛠️ Development Tools
+## Development Tools
 
 ### Recommended VS Code Extensions:
 - ES7+ React/Redux/React-Native snippets
@@ -319,7 +310,7 @@ If you want me to wire up deployments via the Actions (e.g., automatic deploy to
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 ### Frontend (Vercel/Netlify)
 1. Build the app:
@@ -343,7 +334,7 @@ git push heroku main
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/amazing-feature`
@@ -353,7 +344,7 @@ git push heroku main
 
 ---
 
-## 📞 Support
+## Support
 
 For issues or questions:
 - Email: support@hotello.lk
@@ -361,12 +352,25 @@ For issues or questions:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 🎉 Enjoy Building with Hotello!
+## SEO Updates
 
-Happy coding! 🚀✨
+Recent SEO-related changes have been added in the `frontend` package to improve discoverability and social previews:
+
+- Added comprehensive meta tags in `frontend/index.html` (title, description, keywords, canonical).
+- Open Graph and Twitter Card tags for richer social sharing.
+- JSON-LD structured data (TravelAgency and WebSite schemas) included in `frontend/index.html`.
+- Dynamic per-route SEO implemented via `frontend/src/components/SEO.jsx` — updates `document.title` and key meta tags on route change.
+- Created `public/robots.txt`, `public/sitemap.xml`, and `public/site.webmanifest` for crawler guidance and PWA metadata.
+- Updated production URLs to: https://hotello-ebon.vercel.app/
+
+Notes:
+- If you deploy to a different domain, update canonical and sitemap URLs in `frontend/index.html` and `public/sitemap.xml`.
+- For API-origin CORS issues, configure the backend to allow the frontend origin or use the same origin in production.
+
+
