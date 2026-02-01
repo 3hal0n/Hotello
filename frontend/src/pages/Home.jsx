@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HotelCard from '../components/HotelCard';
@@ -129,7 +128,7 @@ export default function Home() {
   const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
   const totalPages = Math.ceil(hotels.length / hotelsPerPage);
 
-  async function handleAdminLogin(token, admin) {
+  async function handleAdminLogin() {
     setIsAdmin(true);
     setShowAdminLogin(false);
     if (!AdminDashboardComp) {
@@ -531,12 +530,7 @@ export default function Home() {
           </section>
 
           {/* Customer Reviews Section */}
-          <motion.section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9 }}
-            viewport={{ once: true, amount: 0.2 }}
-          >
+          <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -626,60 +620,37 @@ export default function Home() {
 
               {/* Trust Indicators */}
               <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <motion.div className="p-6 bg-white rounded-xl shadow-md"
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -6, scale: 1.03, boxShadow: '0 20px 40px rgba(13, 60, 128, 0.12)' }}
-                  transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-                >
+                <div className="p-6 bg-white rounded-xl shadow-md">
                   <div className="text-4xl font-bold text-blue-600 mb-2">4.9/5</div>
                   <div className="text-sm text-gray-600">Average Rating</div>
-                </motion.div>
+                </div>
 
-                <motion.div className="p-6 bg-white rounded-xl shadow-md"
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -6, scale: 1.03, boxShadow: '0 20px 40px rgba(13, 60, 128, 0.12)' }}
-                  transition={{ delay: 0.05, type: 'spring', stiffness: 220, damping: 18 }}
-                >
+                <div className="p-6 bg-white rounded-xl shadow-md">
                   <div className="text-4xl font-bold text-blue-600 mb-2">5,000+</div>
                   <div className="text-sm text-gray-600">Happy Guests</div>
-                </motion.div>
+                </div>
 
-                <motion.div className="p-6 bg-white rounded-xl shadow-md"
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -6, scale: 1.03, boxShadow: '0 20px 40px rgba(13, 60, 128, 0.12)' }}
-                  transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 18 }}
-                >
+                <div className="p-6 bg-white rounded-xl shadow-md">
                   <div className="text-4xl font-bold text-blue-600 mb-2">20+</div>
                   <div className="text-sm text-gray-600">Premium Hotels</div>
-                </motion.div>
+                </div>
 
-                <motion.div className="p-6 bg-white rounded-xl shadow-md"
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -6, scale: 1.03, boxShadow: '0 20px 40px rgba(13, 60, 128, 0.12)' }}
-                  transition={{ delay: 0.15, type: 'spring', stiffness: 220, damping: 18 }}
-                >
+                <div className="p-6 bg-white rounded-xl shadow-md">
                   <div className="text-4xl font-bold text-blue-600 mb-2">24/7</div>
                   <div className="text-sm text-gray-600">AI Support</div>
-                </motion.div>
+                </div>
               </div>
             </div>
-          </motion.section>
+          </section>
 
           {/* Admin Login Button at bottom */}
           <div className="flex justify-center my-10">
-            <motion.button
-              whileHover={{ scale: 1.03, boxShadow: '0 18px 36px rgba(14, 78, 255, 0.18)' }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            <button
               onClick={openAdminLogin}
-              className="px-6 py-2 bg-blue-600 text-white rounded shadow-lg"
+              className="px-6 py-2 bg-blue-600 text-white rounded shadow-lg hover:scale-105 transition-transform"
             >
               Admin Login
-            </motion.button>
+            </button>
           </div>
           {/* Admin Login Modal */}
           {showAdminLogin && (

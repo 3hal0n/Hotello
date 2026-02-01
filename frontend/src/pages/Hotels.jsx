@@ -60,8 +60,8 @@ export default function Hotels() {
       console.log('=== Hotels API Debug ===');
       console.log('API Response:', data);
       console.log('Response type:', typeof data);
-      console.log('Has success property:', data.hasOwnProperty('success'));
-      console.log('Has data property:', data.hasOwnProperty('data'));
+      console.log('Has success property:', Object.prototype.hasOwnProperty.call(data, 'success'));
+      console.log('Has data property:', Object.prototype.hasOwnProperty.call(data, 'data'));
       console.log('Is data an array?:', Array.isArray(data.data));
       console.log('Data length:', data.data?.length || 0);
       console.log('========================');

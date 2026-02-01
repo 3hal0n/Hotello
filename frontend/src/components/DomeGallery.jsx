@@ -299,20 +299,7 @@ export default function DomeGallery({
 
   // Pause auto-rotation when user interacts
   useEffect(() => {
-    const pauseAutoRotate = () => {
-      if (autoRotate && draggingRef.current) {
-        isAutoRotatingRef.current = false;
-      }
-    };
-
-    const resumeAutoRotate = () => {
-      if (autoRotate && !draggingRef.current && !inertiaRAF.current) {
-        setTimeout(() => {
-          isAutoRotatingRef.current = true;
-        }, 2000); // Resume after 2 seconds of no interaction
-      }
-    };
-
+    // Auto-rotation pause/resume logic handled in gesture handlers
     return () => {};
   }, [autoRotate]);
 
