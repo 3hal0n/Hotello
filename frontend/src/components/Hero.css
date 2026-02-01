@@ -102,12 +102,22 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .hero-title-overlay {
-    font-size: clamp(6rem, 20vw, 12rem);
+    /* Increase watermark size on tablet / large phone screens */
+    font-size: clamp(8rem, 24vw, 14rem);
   }
 }
 
 @media (max-width: 480px) {
   .hero-title-overlay {
-    font-size: clamp(4rem, 18vw, 8rem);
+    /* Increase watermark size on small phones for better prominence */
+    font-size: clamp(6rem, 28vw, 12rem);
+  }
+}
+
+/* Keep watermark visually lower and static on small screens */
+@media (max-width: 640px) {
+  .hero-title-overlay {
+    margin-top: 0 !important;
+    transform: translateY(0) !important;
   }
 }
