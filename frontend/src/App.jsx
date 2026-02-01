@@ -13,6 +13,7 @@ import Wishlist from './pages/Wishlist.jsx';
 import Chat from './pages/Chat.jsx';
 import MapView from './pages/MapView.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
+import SEO from './components/SEO.jsx';
 // removed lenis to restore native scrolling behavior
 
 export default function App() {
@@ -23,6 +24,9 @@ export default function App() {
         v7_relativeSplatPath: true,
       }}
     >
+      {/* Dynamic SEO component */}
+      <SEO />
+      
       {/* Routes (native scrolling) */}
       {/* ...existing code... (Navbar is rendered elsewhere) */}
       <Routes>
