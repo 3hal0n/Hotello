@@ -218,19 +218,23 @@ npm install
 
 ## Features Implemented
 
-### Completed
-- Modern Hero section with carousel
-- AI-powered dual search (Destination/Emotion)
-- Advanced hotel filtering & sorting
-- Responsive design (mobile/tablet/desktop)
-- User authentication with Clerk
-- User profile with bookings & favorites
-- About and Contact pages
-- Glassmorphism UI effects
-- Smooth animations & transitions
-- Loading and empty states
-- Payment integration with Stripe
-- Admin?
+- Responsive Hero section with AI emotion-driven search
+- AI Chatbot component (frontend UI for assistant)
+- Hotels listing page with filtering, sorting, and search
+- Hotel details page and image galleries
+- Booking page and client-side booking flow
+- User authentication via Clerk (sign-in, profile integration)
+- User profile with bookings and wishlist/favorites pages
+- Wishlist and Cart pages/components
+- Admin pages (AdminLogin and AdminDashboard) — lazy-loaded in UI
+- HotelCard, image glare effect, and gallery components
+- Map view component for hotels (`HotelMap`)
+- Pagination component for listing pages
+- Navbar and Footer with responsive layout
+- Loading, empty, and error states across pages
+- SEO improvements: `SEO` component and meta tags in `frontend/index.html`
+- API endpoints for hotels, bookings, chats, users and payments (controllers and models present)
+- Stripe payments integration implemented (server-side helpers and frontend flow present).
 
 ### To Do
 - Whatsapp bot
