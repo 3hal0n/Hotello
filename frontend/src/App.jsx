@@ -13,7 +13,8 @@ import Wishlist from './pages/Wishlist.jsx';
 import Chat from './pages/Chat.jsx';
 import MapView from './pages/MapView.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
-import { ReactLenis } from 'lenis/react';
+import SEO from './components/SEO.jsx';
+// removed lenis to restore native scrolling behavior
 
 export default function App() {
   return (
@@ -23,10 +24,12 @@ export default function App() {
         v7_relativeSplatPath: true,
       }}
     >
-      {/* Wrap routes with ReactLenis for smooth scrolling */}
-      <ReactLenis>
-        {/* ...existing code... (Navbar is rendered elsewhere) */}
-        <Routes>
+      {/* Dynamic SEO component */}
+      <SEO />
+      
+      {/* Routes (native scrolling) */}
+      {/* ...existing code... (Navbar is rendered elsewhere) */}
+      <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/hotels' element={<Hotels />} />
         <Route path='/hotels/:id' element={<HotelDetails />} />
@@ -39,8 +42,7 @@ export default function App() {
         <Route path='/about' element={<About />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/profile' element={<Profile />} />
-        </Routes>
-      </ReactLenis>
+      </Routes>
     </BrowserRouter>
   );
 }
