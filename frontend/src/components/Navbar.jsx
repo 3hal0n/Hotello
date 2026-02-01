@@ -45,15 +45,15 @@ export default function Navbar() {
     { path: '/contact', label: 'Contact' },
   ];
 
+  const navBaseClass = 'fixed top-0 left-0 right-0 z-50 transition-all duration-500';
+  const transparentHomeClass = 'bg-transparent border-b border-white/10';
+  const defaultScrolledClass = '<bg-blue-500></bg-blue-500> backdrop-blur-md border-b border-white/5 shadow-2xl';
+  // Deep navy to match the hero "Discover Your Perfect Stay" card
+  const siteColorClass = 'bg-gradient-to-r from-[#071029] via-[#07172b] to-[#0b2740] backdrop-blur-md border-b border-[#083047]/20 shadow-2xl';
+
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isHomePage && !isScrolled
-            ? 'bg-transparent border-b border-white/10'
-            : 'bg-zinc-950/80 backdrop-blur-md border-b border-white/5 shadow-2xl'
-        }`}
-      >
+      <nav className={`${navBaseClass} ${isHomePage && !isScrolled ? transparentHomeClass : (!isHomePage ? siteColorClass : defaultScrolledClass)}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
